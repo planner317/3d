@@ -1,0 +1,91 @@
+html , body{
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #000;
+    color: #ccc;
+    font-size: 16px;
+}
+.b{
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+#lift {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 50%;
+    height: 50%;
+}
+
+#move {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    width: 50%;
+    height: 50%;
+}
+
+#look {
+    position: fixed;
+    left: 50%;
+    top: 0;
+    width: 50%;
+    height: 100%;
+}
+
+#log{
+    position: fixed;
+    top: 0%;
+    height: 90%;
+    left: 0;
+    color: #5f5;
+}
+#log2{
+    position: fixed;
+    top: 0%;
+    height: 90%;
+    left: 50%;
+    color: #5f5;
+}
+
+#fs{
+    position: fixed;
+    top: 0;
+    right: 0px;
+    background: #fff5;
+}
+#menuView{
+    font-size: 50px;
+    position: fixed;
+    top: 0;
+    right: 30px;
+    color: #000;
+    font-family: monospace;
+}
+#menu{
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 50%;
+    margin: 10px;
+    padding: 10px;
+    background: #0006;
+    font-size: 20px;
+    visibility: hidden;
+}
+#menu #full{
+    font-size: 40px;
+    padding: 10px;
+    display: inline-block;
+    line-height: 50px;
+    background: #222;
+    border: outset 10px #666;
+    border-radius: 10px;
+}
+
+#menu #speedSet{
+    width: 100%;
+}
