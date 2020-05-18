@@ -10,25 +10,27 @@
 
 <body>
     <div id="log"></div>
-    <div id="log2"></div>
-    <div id="control">
-        <div id="lift" class="b" style="background-image: url(lift.png);"></div>
-        <div id="move" class="b" style="background-image: url(move.png);"></div>
-        <div id="look" class="b" style="background-image: url(look.png);"></div>
-    </div>
+    <div id="download"></div>
     
+
     <div id="menu">
         <div id="full">полный экран</div>
-        <div id="speedView">чувствительность 0.4<br></div>
-        <input type="range" id="speedSet" step="0.01" value="0.4" min="0.01" max="1">
+        <div id="speedView">чувствительность сенсора 0.75</div>
+        <input type="range" id="speedSet" step="0.01" value="0.75" min="0.1" max="1">
     </div>
 
+    <div id="info">
+        <h2>клавиатура</h2>
+        WASD ↑←↓→ движение<br>
+        SHIFT турбо<br>
+        EC вверх вниз
+    </div>
     <div id="menuView">≡</div>
-
     <script src="module/three.min.js"></script>
     <script src="module/MTLLoader.js"></script>
     <script src="module/OBJLoader.js"></script>
     <script src="module/touchControl.js"></script>
+    <script src="module/MouseAndKeyboardControlsFirstPerson.js"></script>
     <script src="js/room.js"></script>
 
 </body>

@@ -10,30 +10,7 @@ html , body{
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
-}
-
-#lift {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 50%;
-    height: 50%;
-}
-
-#move {
-    position: fixed;
-    left: 0;
-    top: 50%;
-    width: 50%;
-    height: 50%;
-}
-
-#look {
-    position: fixed;
-    left: 50%;
-    top: 0;
-    width: 50%;
-    height: 100%;
+    opacity: 80%;
 }
 
 #log{
@@ -42,22 +19,18 @@ html , body{
     height: 90%;
     left: 0;
     color: #5f5;
+    font-size: 20px;
 }
-#log2{
+#download{
     position: fixed;
-    top: 0%;
-    height: 90%;
-    left: 50%;
+    z-index: 1;
+    width: -webkit-fill-available;
+    font-size: -webkit-xxx-large;
+    text-align: center;
     color: #5f5;
 }
-
-#fs{
-    position: fixed;
-    top: 0;
-    right: 0px;
-    background: #fff5;
-}
 #menuView{
+    z-index: 1;
     font-size: 50px;
     position: fixed;
     top: 0;
@@ -66,26 +39,39 @@ html , body{
     font-family: monospace;
 }
 #menu{
+    z-index: 1;
     position: fixed;
     top: 0;
     right: 0;
-    width: 50%;
+    max-width: 400px;
+    min-width: 200px;
+    width: -webkit-fill-available;
     margin: 10px;
     padding: 10px;
-    background: #0006;
+    background: #0008;
     font-size: 20px;
     visibility: hidden;
+    border-radius: 10px;
 }
 #menu #full{
-    font-size: 40px;
     padding: 10px;
     display: inline-block;
-    line-height: 50px;
+    line-height: 40px;
+    text-align: center;
     background: #222;
-    border: outset 10px #666;
+    border: outset 2px #666;
     border-radius: 10px;
+    margin-bottom: 70px;
 }
 
 #menu #speedSet{
     width: 100%;
+}
+#info{
+    position: fixed;
+    width: 50%;
+    z-index: 1;
+    text-align: center;
+    top:50%;
+    left:50%;
 }

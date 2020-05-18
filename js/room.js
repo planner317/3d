@@ -2,8 +2,6 @@
 let ddd = new Ddd()
 ddd.animate();
 
-window.ontouchstart = window.onclick = hideInterfice;
-
 menuView.onclick=()=>{
     if (menu.style.visibility == "visible") menu.style.visibility = "hidden"
     else menu.style.visibility = "visible"
@@ -15,18 +13,20 @@ full.onclick=()=>{
 }
 
 speedSet.onchange=()=>{
-    speedView.innerText="чувствительность " + speedSet.value;
+    speedView.innerText="чувствительность сенсора " + speedSet.value;
     ddd.touchControl.speed = speedSet.value
 }
 
-function hideInterfice() {
-    lift.style.background = ""
-    move.style.background = ""
-    look.style.background = ""
-    window.ontouchstart = window.onclick = ""
+window.addEventListener("click", hideInfo)
+window.addEventListener("touchstart", hideInfo)
+
+function hideInfo(){
+    info.remove();
+    window.removeEventListener("click",hideInfo)
+    window.removeEventListener("touchstart",hideInfo)
 }
 
-
+//////////////////////// 3d пространство
 function Ddd() {
     let t = this
     t.scene = new THREE.Scene();
@@ -37,9 +37,17 @@ function Ddd() {
     document.body.append(t.renderer.domElement);
 
     t.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+    t.camera.position.y=25;
 
-    t.touchControl = new TouchControl(lift, move, look, t.camera);
-    t.touchControl.box.position.y = 25
+    // движение мышкой в режиме pointerLock и движение клавой
+    t.pointerLook = new THREE.MouseAndKeyboardControlsFirstPerson(t.camera, document.body);
+
+    // уравление камерой с помощью сенсорного экрана, кидаем только камеру области для нажатия создает сам
+    t.touchControl = new TouchControl(t.camera); 
+
+    t.mode; // режим упарвление сенсором или клавиатурой с мышкой
+
+
     // t.ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
     // t.scene.add(t.ambientLight);
 
@@ -58,7 +66,8 @@ function Ddd() {
     var onProgress = function (xhr) {
         if (xhr.lengthComputable) {
             var percentComplete = xhr.loaded / xhr.total * 100;
-            log.innerHTML = ("загрузка" + Math.round(percentComplete, 2) + '%');
+            download.style.lineHeight = window.innerHeight/1.5 +"px";
+            download.innerHTML = `загрузка ${Math.round(percentComplete, 2)}%`;
         }
     };
 
@@ -69,7 +78,7 @@ function Ddd() {
     ///////////////////////
     new THREE.MTLLoader(manager)
         .setPath('model/')
-        .load('room.mtl', function (materials) {
+        .load('room.mtl', function (materials) { // callmback функция вызывается после загрузки
 
             materials.preload();
 
@@ -79,7 +88,7 @@ function Ddd() {
                 .load('room.obj', function (object) {
                     t.room = object
                     t.scene.add(object)
-                    log.innerHTML = "";
+                    download.remove()
                 }, onProgress, onError);
         });
 
@@ -91,6 +100,8 @@ function Ddd() {
     }
     window.addEventListener('resize', t.onWinResize, false);
 
+    window.addEventListener("touchstart", ()=> t.mode = "sensor");
+
     t.animate = () => {
 
         requestAnimationFrame(t.animate);
@@ -98,16 +109,18 @@ function Ddd() {
         // log.innerHTML = `
         // orY = ${t.touchControl.orientation.y}<br>
         // orX = ${t.touchControl.orientation.x}<br><br>
-        // lift y= ${t.touchControl.offsetXYLift.y}<br><br>
-        // move x= ${t.touchControl.offsetXYMove.x}<br> 
-        // move y= ${t.touchControl.offsetXYMove.y}<br><br>
+        // lift y= ${t.touchControl.offsetXYV.y}<br><br>
+        // move x= ${t.touchControl.offsetXYH.x}<br> 
+        // move y= ${t.touchControl.offsetXYH.y}<br><br>
         // look x= ${t.touchControl.offsetXYLook.x}<br>
         // look y= ${t.touchControl.offsetXYLook.y}<br><br>
-        // lookMoved = ${t.touchControl.lookMoved}
+        // lookMoved = ${t.touchControl.lookActiv}
         // `;
-        // if (log2.innerHTML.length >700) log2.innerHTML=""
+       //if (log2.innerHTML.length >700) log2.innerHTML=""
 
-        t.touchControl.update();
+       if (t.mode == "sensor") t.touchControl.update();
+       else t.pointerLook.update()
+
         t.renderer.render(t.scene, t.camera);
 
     }
