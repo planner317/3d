@@ -63,13 +63,13 @@ function init() {
     cameraControls.addEventListener('change', render);
 
     // TEXTURE MAP
-    var textureMap = new THREE.TextureLoader().load('/textures/uv_grid_opengl.jpg');
+    var textureMap = new THREE.TextureLoader().load('../textures/uv_grid_opengl.jpg');
     textureMap.wrapS = textureMap.wrapT = THREE.RepeatWrapping;
     textureMap.anisotropy = 16;
     textureMap.encoding = THREE.sRGBEncoding;
 
     // REFLECTION MAP
-    var path = "/textures/pisa/";
+    var path = "../textures/pisa/";
     var urls = [
         path + "px.png", path + "nx.png",
         path + "py.png", path + "ny.png",
