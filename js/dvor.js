@@ -42,15 +42,19 @@ function Ddd() {
     t.renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.append(t.renderer.domElement);
 
-    t.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-    t.camera.position.y=25;
+    t.ambientLight = new THREE.AmbientLight(0xffffff);
+    t.ambientLight.intensity=1.5;
+    t.scene.add(t.ambientLight);
 
     t.stats = new Stats()
     t.stats.setMode()
     document.body.append(t.stats.dom);
-    
+
+    t.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+    t.camera.position.y=50;
+
     // движение мышкой в режиме pointerLock и движение клавой
-    t.pointerLook = new THREE.MouseAndKeyboardControlsFirstPerson(t.camera, document.body);
+    t.pointerLook = new THREE.MouseAndKeyboardControlsFirstPerson(t.camera, t.renderer.domElement);
 
     // уравление камерой с помощью сенсорного экрана, кидаем только камеру области для нажатия создает сам
     t.touchControl = new TouchControl(t.camera); 
@@ -71,16 +75,16 @@ function Ddd() {
 
     ///////////////////////
     new THREE.MTLLoader(manager)
-        .setPath('model/')
-        .load('room.mtl', function (materials) { // callmback функция вызывается после загрузки
+        .setPath('model/dvor/')
+        .load('dvor.mtl', function (materials) { // callmback функция вызывается после загрузки
 
             materials.preload();
 
             new THREE.OBJLoader(manager)
                 .setMaterials(materials)
-                .setPath('model/')
-                .load('room.obj', function (object) {
-                    t.room = object
+                .setPath('model/dvor/')
+                .load('dvor.obj', function (object) {
+                    t.dvor = object
                     t.scene.add(object)
                     download.remove()
                 }, onProgress, onError);
@@ -104,7 +108,7 @@ function Ddd() {
        else t.pointerLook.update()
 
        if (fps.checked) t.stats.update();
-       
+
         t.renderer.render(t.scene, t.camera);
 
     }

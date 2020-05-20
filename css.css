@@ -23,7 +23,7 @@ html , body{
 }
 #download{
     position: fixed;
-    z-index: 1;
+    z-index: 10;
     width: -webkit-fill-available;
     font-size: -webkit-xxx-large;
     text-align: center;
@@ -37,6 +37,7 @@ html , body{
     right: 30px;
     color: #000;
     font-family: monospace;
+    cursor: pointer;
 }
 #menu{
     z-index: 1;
@@ -61,11 +62,16 @@ html , body{
     background: #222;
     border: outset 2px #666;
     border-radius: 10px;
-    margin-bottom: 70px;
+    margin-bottom: 30px;
+    cursor: pointer;
 }
-
+#menu #fps{
+    margin-bottom: 30px;
+    cursor: pointer;
+}
 #menu #speedSet{
     width: 100%;
+    cursor: pointer;
 }
 #info{
     position: fixed;
