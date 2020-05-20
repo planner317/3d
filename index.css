@@ -8,11 +8,9 @@ a{
     color:#aaf;
 }
 li{
-    padding-bottom: 7px;
+    padding-bottom: 3px;
 }
-#scene{
-font-size: 20px;
-}
+
 canvas{
     position: fixed;
     top: 0;
