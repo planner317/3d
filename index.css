@@ -1,0 +1,21 @@
+html {
+    margin: 0;
+    padding: 0;
+    background-color: black;
+    color: white;
+}
+a{
+    color:#aaf;
+}
+li{
+    padding-bottom: 7px;
+}
+#scene{
+font-size: 20px;
+}
+canvas{
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
