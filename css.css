@@ -20,6 +20,7 @@ html , body{
     left: 0;
     color: #5f5;
     font-size: 20px;
+    font-family: monospace;
 }
 #download{
     position: fixed;

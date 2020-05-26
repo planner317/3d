@@ -1,3 +1,5 @@
+
+
 let ddd = new Ddd()
 ddd.animate();
 
@@ -38,6 +40,7 @@ fps.onchange = () => { if (fps.checked) ddd.stats.setMode(0); else ddd.stats.set
 //////////////////////// 3d пространство
 function Ddd() {
     let t = this
+    t.loaden = false;
     t.scene = new THREE.Scene();
     t.scene.background = new THREE.Color(0x223344)
     t.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -46,6 +49,14 @@ function Ddd() {
 
     t.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
     t.camera.position.y = 25;
+    /////////////////////////////  коллизия
+    var geometry = new THREE.SphereGeometry(5, 5, 6)
+    var wireMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+    t.colliz = new THREE.Mesh(geometry, wireMaterial);
+    //t.scene.add(t.colliz)
+
+    t.ray = new THREE.Raycaster();
+    t.ray.far=10
 
     t.stats = new Stats()
     fps.append(t.stats.dom);
@@ -82,13 +93,16 @@ function Ddd() {
                 .setPath('model/room/')
                 .load('room.obj', function (object) {
                     t.room = object
-                    t.mirrorRoom= new THREE.Object3D();
+                    t.room.children[8].material.visible=false
+                    t.mirrorRoom = new THREE.Object3D();
                     t.mirrorRoom.copy(t.room);
-                    t.mirrorRoom.scale.x=-1
-                    t.mirrorRoom.position.x=-105.4
+                    t.mirrorRoom.scale.x = -1
+                    t.mirrorRoom.position.x = -105.4
                     t.scene.add(object)
                     t.scene.add(t.mirrorRoom)
                     download.remove()
+                    t.colizMesh=[t.room.children[8],t.mirrorRoom.children[8]]
+                    t.loaden = true
                 }, onProgress, onError);
         });
 
@@ -121,11 +135,34 @@ function Ddd() {
     t.animate = () => {
 
         requestAnimationFrame(t.animate);
+        if (t.loaden) {
 
-        if (t.mode == "sensor") t.touchControl.update();
-        else t.pointerLook.update()
+            if (t.mode == "sensor") t.touchControl.update();
+            else t.pointerLook.update()
 
-        if (menu.style.visibility == "visible") t.stats.update();
+            if (menu.style.visibility == "visible") t.stats.update();
+
+            t.colliz.position.x = t.camera.position.x
+            t.colliz.position.y = t.camera.position.y
+            t.colliz.position.z = t.camera.position.z
+
+            for (var vertexIndex = 0; vertexIndex < t.colliz.geometry.vertices.length; vertexIndex++) {
+                var localVertex = t.colliz.geometry.vertices[vertexIndex];
+
+                t.ray.ray.origin=t.camera.position
+                t.ray.ray.direction=localVertex
+                var collisionResults = t.ray.intersectObjects(t.colizMesh);
+                if (collisionResults.length){
+
+                    if (collisionResults[0].distance < 5) {
+                        t.camera.position.x -= localVertex.x / collisionResults[0].distance
+                        t.camera.position.y -= localVertex.y / collisionResults[0].distance
+                        t.camera.position.z -= localVertex.z / collisionResults[0].distance
+                        
+                    }
+                }
+            }
+        }
 
         t.renderer.render(t.scene, t.camera);
 
