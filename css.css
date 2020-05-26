@@ -3,7 +3,7 @@ html , body{
     padding: 0;
     overflow: hidden;
     background: #000;
-    color: #ccc;
+    color: white;
     font-size: 16px;
 }
 .b{
@@ -35,7 +35,6 @@ html , body{
     position: fixed;
     top: 0;
     right: 30px;
-    color: #000;
     font-family: monospace;
     cursor: pointer;
 }
@@ -52,20 +51,28 @@ html , body{
     background: #0008;
     font-size: 20px;
     visibility: hidden;
-    border-radius: 10px;
+    border-radius: 20px;
+    font-family: monospace;
 }
 #menu #full{
     padding: 10px;
+    margin-right: 10px;
     display: inline-block;
     line-height: 40px;
     text-align: center;
-    background: #222;
-    border: outset 2px #666;
-    border-radius: 10px;
-    margin-bottom: 30px;
+    background: white;
+    color: black;
+    border: outset 4px #eee;
+    border-radius: 20px;
     cursor: pointer;
+    font-weight: 800;
 }
-#menu #fps{
+.resHed{
+    text-align: center;
+    width: 100%;
+    margin: 10px;
+}
+#menu{
     margin-bottom: 30px;
     cursor: pointer;
 }
@@ -80,4 +87,25 @@ html , body{
     text-align: center;
     top:50%;
     left:50%;
+}
+.conteinerRes , .conteierWind{
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.conteinerRes .resolution input{
+width: -webkit-fill-available;
+padding: 5px;
+margin: 5px 0;
+border: outset 4px #eee;
+border-radius: 20px;
+background: white;
+color: black;
+font-weight: 800;
+line-height: 10px;
+}
+#resView{
+    text-align: center;
+    flex: 1;
+    line-height: 25px;
 }
