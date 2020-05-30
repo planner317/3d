@@ -156,21 +156,29 @@ function TouchControl(camera) {
 
         if (t.orientation.y > 179.9) t.orientation.y = 179.9
         if (t.orientation.y < 0.1) t.orientation.y = 0.1
-        
+
         t.euler.setFromQuaternion(camera.quaternion);
-        t.euler.y = THREE.MathUtils.degToRad( t.orientation.x * t.speed)
-        t.euler.x = THREE.MathUtils.degToRad( (t.orientation.y-90) * t.speed)
-        
+        t.euler.y = THREE.MathUtils.degToRad(t.orientation.x * t.speed)
+        t.euler.x = THREE.MathUtils.degToRad((t.orientation.y - 90) * t.speed)
+
+        //////////////////////////////////// добавить чувствительность
+        t.offsetXYH.x *= t.speed / 100
+        t.offsetXYH.y *= t.speed / 100
+        t.offsetXYV.y *= t.speed / 100
+        //////ограничитель смещения до 2-х
+        t.offsetXYH.x = Math.min(Math.max(-2, t.offsetXYH.x), 2);
+        t.offsetXYH.y = Math.min(Math.max(-2, t.offsetXYH.y), 2);
+        t.offsetXYV.y = Math.min(Math.max(-2, t.offsetXYV.y), 2);
         //  вроде встает на один по X или Z относительно локальной координаты камеры
         t.v3.setFromMatrixColumn(camera.matrix, 0);
         // приплюсоваывает координаты из v3 в камеру умноженую на 2-й агрумент(это смещение пальца на сенсоре * чувствительность)
-        camera.position.addScaledVector(t.v3, t.offsetXYH.x * t.speed / 100);
+        camera.position.addScaledVector(t.v3, t.offsetXYH.x);
         // перекручивает положение вектора v3 по оси Y
         t.v3.crossVectors(camera.up, t.v3);
         // еще раз приплюсовавает теперь в другую сторону
-        camera.position.addScaledVector(t.v3, -t.offsetXYH.y * t.speed / 100);
+        camera.position.addScaledVector(t.v3, -t.offsetXYH.y);
 
-        camera.position.y += -t.offsetXYV.y * t.speed / 100 // подъем или спуск здесь все просто
+        camera.position.y += -t.offsetXYV.y // подъем или спуск здесь все просто
 
         camera.quaternion.setFromEuler(t.euler);
 
