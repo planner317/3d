@@ -138,7 +138,7 @@ function TouchControl(camera) {
         }
     }
 
-    t.update = function (run) {
+    t.update = function (run=1) {
 
         if (!t.lookActiv) { // если движение по области look не было
             t.offsetXYLook.x = 0

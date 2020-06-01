@@ -183,7 +183,7 @@ function Ddd() {
             else t.pointerLook.update(t.run)
 
             t.newSubOld = t.camera.position.clone().sub(t.oldPosition.position) // разница новой позиции и старой
-
+            t.newSubOld.normalize()
             t.distance = t.camera.position.distanceTo(t.oldPosition.position)  // дистанция новой позиции и старой
             if (t.distance) {    // если есть эта дистанция
                 t.run += 0.05

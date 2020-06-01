@@ -15,10 +15,6 @@ THREE.MouseAndKeyboardControlsFirstPerson = function (camera, domElement) {
 	this.moveY = 0
 	this.moveZ = 0
 
-	scope.filterX = Array(10)
-	scope.filterY = Array(10)
-	scope.filterZ = Array(10)
-
 	scope.speed = 1
 
 	var changeEvent = { type: 'change' };
@@ -232,7 +228,7 @@ THREE.MouseAndKeyboardControlsFirstPerson = function (camera, domElement) {
 
 	};
 
-	this.update = function (run) {
+	this.update = function (run=1) {
 		this.moveForward(scope.moveZ * scope.speed * run)
 		this.moveRight(scope.moveX * scope.speed * run)
 		camera.position.y += scope.moveY * scope.speed * run
