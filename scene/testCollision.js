@@ -47,66 +47,36 @@ function Ddd() {
     t.resolution = 720
     document.body.append(t.renderer.domElement);
 
+    t.run = 1 // коэфициент скорости от 1 без ограничений
+
     t.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+    t.camera.near=0.001
     t.scene.add(t.camera);
-    t.camhelp= new THREE.CameraHelper(t.camera)
-    t.scene.add(t.camhelp)
-
-    t.camera2 = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-    t.scene.add(t.camera2);
-
-    
-    ////////////////////////// полушар с 50 вершинами для отбрасывание луча
-    var geometry = new THREE.SphereGeometry(3, 10, 5, 0, Math.PI * 2, 0, Math.PI / 2)
-    var wireMaterial = new THREE.MeshBasicMaterial({ color: 0x0, wireframe: true });
-    t.collizGeometry = new THREE.Mesh(geometry, wireMaterial)
-    t.scene.add(t.collizGeometry)
-
-    //созднаие кучи 3дОбъектов из координат вершин
-    t.collizPointDDDD = []
-    for (let i = 0; i < t.collizGeometry.geometry.vertices.length; i++) {
-        let vertex = t.collizGeometry.geometry.vertices[i].clone()               // координаты одной из вершин
-
-        var geometry = new THREE.SphereGeometry(0.05, 2, 2)
-        var wireMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true, wireframeLinewidth:0.1 });
-        t.collizPointDDDD.push(new THREE.Mesh(geometry, wireMaterial));
-        t.collizPointDDDD[i].position.copy(vertex)
-        t.collizGeometry.add(t.collizPointDDDD[i])
-    }
 
     t.camera.position.y = 25;
 
-    t.oldPosition = new THREE.Object3D();   // предидущая позиция камеры
+    t.oldPosition = new THREE.Object3D();   // предыдущая позиция камеры
 
-    // t.scene.add(t.oldPosition)
+    t.camera2 = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+    t.camera2.position.z = 20
 
-    t.collizPoint = []
-    /////////////////////////////  коллизия
-    for (let i = 0; i < t.collizGeometry.geometry.vertices.length; i++) {
+    t.camera.add(t.camera2)
 
-        var geometry = new THREE.SphereGeometry(0.5, 2, 2)
-        var wireMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-        t.collizPoint.push(new THREE.Mesh(geometry, wireMaterial));
-        t.scene.add(t.collizPoint[i])
-    }
+    ////////////////////////// полушар с 50 вершинами для отбрасывание луча
+    var geometry = new THREE.SphereGeometry(3, 10, 10)
+    var material = new THREE.MeshPhongMaterial({ color: 0x4444ff, });
+    t.player = new THREE.Mesh(geometry, material)
+    t.scene.add(t.player)
+    t.camera.add(t.player)
 
     t.ray = new THREE.Raycaster();
     // t.ray.far = 10
     //////////////////////// глобальное освещение
-    t.pointLight = new THREE.PointLight(0x77aaff);
-    t.pointLight.intensity = 0.5;
-    t.pointLight.position.y=50
+    t.pointLight = new THREE.PointLight(0xffffff);
+    t.pointLight.intensity = 0.8;
+    t.pointLight.position.y = 50
     t.scene.add(t.pointLight);
 
-    t.spotLight = new THREE.SpotLight()
-    t.spotLight.intensity=1
-    t.scene.add(t.spotLight)
-    t.camera.add(t.spotLight)
-    t.camera.add(t.spotLight.target)
-    t.spotLight.target.position.z=-1;
-    t.spotLight.position.y=0;
-    t.spotLight.penumbra=0.2
-    t.spotLight.angle=0.8
     //////////////////////////////// FPS
     t.stats = new Stats()
     fps.append(t.stats.dom);
@@ -153,7 +123,9 @@ function Ddd() {
 
     t.resize = () => {
         t.camera.aspect = window.innerWidth / window.innerHeight;
+        t.camera2.aspect = window.innerWidth / window.innerHeight;
         t.camera.updateProjectionMatrix();
+        t.camera2.updateProjectionMatrix();
         let oritntac = window.innerWidth > window.innerHeight // 1 ланшафтная 0 портретная
         let coef = oritntac ? window.innerHeight / t.resolution : window.innerWidth / t.resolution
         t.renderer.setSize(window.innerWidth / coef, window.innerHeight / coef);
@@ -176,65 +148,51 @@ function Ddd() {
 
     window.addEventListener("touchstart", () => t.mode = "sensor");
 
+
+
+    //////////////------------------------АНИМАЦИЯ------------------------///
     t.animate = () => {
 
-        requestAnimationFrame(t.animate);
         if (t.loaden) {
-
-            t.camera2.position.x=t.camera.position.x;
-            t.camera2.position.z=t.camera.position.z+30;
-            t.camera2.position.y=30
-            t.camera2.lookAt(t.camera.position)
-
-
-            if (t.mode == "sensor") t.touchControl.update();
-            else t.pointerLook.update()
-
             if (menu.style.visibility == "visible") t.stats.update();
 
-            v3 = t.camera.position.clone().sub(t.oldPosition.position) // разница новой позиции и старой
+            if (t.mode == "sensor") t.touchControl.update(t.run);
+            else t.pointerLook.update(t.run)
 
-            r = t.camera.position.distanceTo(t.oldPosition.position)  // дистанция новой позиции и старой
-            if (r) {    // если есть эта дистанция
-                let arrDistans=[];
-                t.collizGeometry.position.copy(t.camera.position);
-                t.collizGeometry.lookAt(t.oldPosition.position)  // повернуть морду
-                t.collizGeometry.rotateX(-Math.PI / 2)
-                //t.collizGeometry.rotation.z=Math.random()
+            newSubOld = t.camera.position.clone().sub(t.oldPosition.position) // разница новой позиции и старой
 
-                for (let i = 0; i < t.collizPointDDDD.length; i++) {
-                    let pos = t.collizPointDDDD[i].localToWorld(new THREE.Vector3())               // координаты одной из вершин
-                    pos.sub(t.camera.position)
-                    t.ray.ray.origin = t.camera.position       // начало луча
-                    t.ray.ray.direction = pos               // направление луча ДОЛЖНО БЫТЬ СМЕЩЕНИЕ ОТ НУЛЯ ТО ЕСТЬ НОЛЬ ЭТО НАЧАЛО ЛУЧА
-                    var collisionResults = t.ray.intersectObjects(t.colizMesh); // массив с сетками для коллизии
-                    if (collisionResults.length) {
-                        t.collizPoint[i].position.copy(collisionResults[0].point)   // поставить фигуру на место падение луча
+            dis = t.camera.position.distanceTo(t.oldPosition.position)  // дистанция новой позиции и старой
+            if (dis) {    // если есть эта дистанция
+                t.run +=0.05
+                    /////////// функция определит растояние до стены. равномерно уменьшает run от дистанции 6 до 3
+                    stooped();
+            }
+            else t.run -=0.05
 
-                        if (collisionResults[0].distance < 3) {
-                            arrDistans.push({
-                                distance: collisionResults[0].distance,
-                                vectorDirec: pos
-                            })
-                        }
-                    }
-                }
-                
-                 if(arrDistans.length) {
-                     
-                    arrDistans.sort((a,b)=>a.distance - b.distance)
-                    let distanceClone = arrDistans[0].vectorDirec.clone()
-                    arrDistans[0].vectorDirec.setLength(3-arrDistans[0].distance)     // изменил длину вектора наплавление 
-                    //let sub = arrDistans[0].vector.sub(distanceClone)// разницa
-                    t.camera.position.sub(arrDistans[0].vectorDirec)
-                 }
+            t.run = Math.min(Math.max(0.000001, t.run), 1); // диапозон
+
+            if (cam2.checked) t.renderer.render(t.scene, t.camera2);
+            else t.renderer.render(t.scene, t.camera);
+            t.oldPosition.position.copy(t.camera.position.clone())
+        }
+        requestAnimationFrame(t.animate);
+    }
+
+    //////////////тормаз////
+    function stooped() {
+
+        t.ray.ray.origin = t.camera.position       // начало луча
+        t.ray.ray.direction = newSubOld // направление луча ДОЛЖНО БЫТЬ СМЕЩЕНИЕ ОТ НУЛЯ ТО ЕСТЬ НОЛЬ ЭТО НАЧАЛО ЛУЧА
+        let collisionResults = t.ray.intersectObjects(t.colizMesh); // массив с сетками для коллизии
+        if (collisionResults.length) {
+
+            log.innerHTML = collisionResults[0].distance
+
+            if (collisionResults[0].distance < 6) {
+                let d = (collisionResults[0].distance - 3) /3
+                t.run = d
             }
         }
-
-
-        if (cam2.checked) t.renderer.render(t.scene, t.camera2);
-        else t.renderer.render(t.scene, t.camera);
-        t.oldPosition.position.copy(t.camera.position.clone())
     }
 }
 

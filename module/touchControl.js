@@ -138,7 +138,7 @@ function TouchControl(camera) {
         }
     }
 
-    t.update = function () {
+    t.update = function (run) {
 
         if (!t.lookActiv) { // если движение по области look не было
             t.offsetXYLook.x = 0
@@ -161,10 +161,10 @@ function TouchControl(camera) {
         t.euler.y = THREE.MathUtils.degToRad(t.orientation.x * t.speed)
         t.euler.x = THREE.MathUtils.degToRad((t.orientation.y - 90) * t.speed)
 
-        //////////////////////////////////// добавить чувствительность
-        t.offsetXYH.x *= t.speed / 100
-        t.offsetXYH.y *= t.speed / 100
-        t.offsetXYV.y *= t.speed / 100
+        //////////////////////////////////// добавить чувствительность и коэфицент run
+        t.offsetXYH.x *= t.speed / 100 * run
+        t.offsetXYH.y *= t.speed / 100 * run
+        t.offsetXYV.y *= t.speed / 100 * run
         //////ограничитель смещения до 2-х
         t.offsetXYH.x = Math.min(Math.max(-2, t.offsetXYH.x), 2);
         t.offsetXYH.y = Math.min(Math.max(-2, t.offsetXYH.y), 2);

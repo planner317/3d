@@ -232,19 +232,10 @@ THREE.MouseAndKeyboardControlsFirstPerson = function (camera, domElement) {
 
 	};
 
-	this.update = function () {
-		////////////////////// фильтрация средее арифметическое из 10 последних 
-		scope.filterX.push(scope.moveX); scope.filterX.shift();
-		scope.filterY.push(scope.moveY); scope.filterY.shift();
-		scope.filterZ.push(scope.moveZ); scope.filterZ.shift();
-
-		let fx = scope.filterX.reduce((a, b) => (a + b)) / 10
-		let fy = scope.filterY.reduce((a, b) => (a + b)) / 10
-		let fz = scope.filterZ.reduce((a, b) => (a + b)) / 10
-
-		this.moveForward(fz * scope.speed)
-		this.moveRight(fx * scope.speed)
-		camera.position.y += fy * scope.speed
+	this.update = function (run) {
+		this.moveForward(scope.moveZ * scope.speed * run)
+		this.moveRight(scope.moveX * scope.speed * run)
+		camera.position.y += scope.moveY * scope.speed * run
 	}
 
 	this.connect();
