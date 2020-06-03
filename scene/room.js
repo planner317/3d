@@ -238,7 +238,7 @@ function Ddd() {
                 t.night()
             }
             ////////////// призрак скример и вырубить
-            if (collisionResults[0].distance < 20 && collisionResults[0].object == t.colizMesh[4]) {
+            if (collisionResults[0].distance < 40 && collisionResults[0].object == t.colizMesh[4]) {
                 t.day()
             }
         }
