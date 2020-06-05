@@ -1,0 +1,118 @@
+
+    <div id="menu">
+        <div class="conteierWind">
+            <div id="full">полный<br>экран</div>
+            <div id="fps"></div>
+        </div>
+        <div class="resHed">разрешение</div>
+        <div class="conteinerRes">
+            <div id="domResolution">
+                <input type="button" value="1080" value="1080">
+                <input type="button" value="720" value="720">
+                <input type="button" value="480" value="480">
+                <input type="button" value="360" value="360">
+            </div>
+            <div id="resView"></div><br>
+        </div>
+
+        <div id="speedView">чувствительность сенсора 0.75</div>
+        <input type="range" id="speedSet" step="0.01" value="0.75" min="0.1" max="1">
+    </div>
+
+    <div id="menuView">≡
+    </div>
+
+    <div id="info" style="position: fixed; bottom: 20px; text-align: center; width: 100%;">
+        WASD ↑←↓→ движение, SHIFT - турбо, EC - вверх вниз.
+    </div>
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #000;
+            color: white;
+            font-size: 16px;
+        }
+
+        #menuView {
+            z-index: 1;
+            font-size: 50px;
+            position: fixed;
+            top: 0;
+            right: 30px;
+            font-family: monospace;
+            cursor: pointer;
+            text-shadow: 2px 2px black;
+        }
+
+        #menu {
+            z-index: 1;
+            position: fixed;
+            top: 0;
+            right: 0;
+            max-width: 340px;
+            min-width: 200px;
+            width: -webkit-fill-available;
+            margin: 10px;
+            padding: 10px;
+            background: #0008;
+            font-size: 20px;
+            visibility: hidden;
+            border-radius: 20px;
+            font-family: monospace;
+        }
+
+        #menu #full {
+            padding: 10px;
+            margin-right: 10px;
+            display: inline-block;
+            font-family: auto;
+            line-height: 28px;
+            text-align: center;
+            background: white;
+            color: black;
+            font-size: 30px;
+            border: outset 4px #eee;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 800;
+        }
+
+        .resHed {
+            text-align: center;
+            width: -webkit-fill-available;
+            margin: 10px;
+        }
+
+        #menu #speedSet {
+            width: -webkit-fill-available;
+            cursor: pointer;
+        }
+
+        .conteinerRes, .conteierWind {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .conteinerRes input {
+            width: 134px;
+            flex: 1;
+            padding: 5px;
+            margin: 5px 0;
+            border: outset 4px #eee;
+            border-radius: 20px;
+            background: white;
+            color: black;
+            font-weight: 800;
+            line-height: 10px;
+        }
+
+        #resView ,#domResolution{
+            text-align: center;
+            flex: 1;
+            line-height: 25px;
+        }
+    </style>

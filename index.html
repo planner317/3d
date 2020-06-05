@@ -1,35 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3d</title>
-    <link rel="stylesheet" href="index.css">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=0">
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=0">
 </head>
-<body>
-    <h1>3D сцены</h1>
-    <ul id="scene">
-        <li>
-            <a href="room.html">Комната</a>
-        </li>
-        <li>
-            <a href="dvor.html">Двор</a>
-        </li>
-        <li>
-            <a href="https://planner317.github.io/tetris3D/scorpion/scorpion.html">Scorpion1</a>
-        </li>
-        <li>
-            <a href="https://planner317.github.io/tetris3D/scorpion/scorpion2.html">Scorpion2</a>
-        </li>
-        <li>
-            <a href="https://planner317.github.io/test/raziels/">Raziels</a>
-        </li>
-        <li>
-            <a href="https://planner317.github.io/tetris3D/index.html">Tetris 3d</a>
-        </li>
-    </ul>
-    <script src="scene/teopot.js" type="module"></script>
+
+<body style="background: #000">
+    <div id="base" style="position: fixed;z-index: 10;
+    background: #000d;
+    padding: 0 20px;
+    margin: 5px;
+    border-radius: 20px;">
+
+        <h1>3D сцены</h1>
+        <ul id="scene">
+            <li>
+                <a href="scene/room/">Комната</a>
+            </li>
+            <li>
+                <a href="scene/dvor/">Двор</a>
+            </li>
+            <li>
+                <a href="https://planner317.github.io/tetris3D/scorpion/scorpion2.html">Scorpion</a>
+            </li>
+            <li>
+                <a href="https://planner317.github.io/test/raziels/">Raziels</a>
+            </li>
+        </ul>
+    </div>
+    <script type="module">
+
+        import Viewer from "./viewer/viewer.js"
+
+        window.viewer = new Viewer()
+
+    </script>
 
 </body>
+
 </html>
