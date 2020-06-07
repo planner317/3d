@@ -135,7 +135,7 @@ function event() {
             night()
         }
         ////////////// призрак скример и вырубить
-        if (viewer.camera.position.x > -30 && nightflag) {
+        if (viewer.camera.position.distanceTo() > -30 && nightflag) {
             day()
         }
     }

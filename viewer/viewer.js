@@ -18,7 +18,7 @@ export default function Viewer() {
             document.body.prepend(d)
             d.innerHTML += data
             menu.onclick = (e) => {
-                e.preventDefault()
+                //e.preventDefault()
                 e.stopPropagation()
             }
             // клик по бургеру показывает меню
@@ -49,22 +49,45 @@ export default function Viewer() {
             domResolution.onclick = setResolution;
             function setResolution(e) {
                 if (e.target.tagName == "INPUT") resolution = e.target.value
-                    resize(); getRes()
+                resize(); getRes()
             }
             //////////////////////////////// FPS
             stats = new Stats()
             fps.append(stats.dom);
 
             function getRes() {                     // записывает изменеие в меню
-                resView.innerHTML = "внешнее<br>"
-                    + window.outerWidth + " x " + window.outerHeight
-                    + "<br>внутрение<br>"
-                    + window.innerWidth + " x " + window.innerHeight
+                resView.innerHTML = window.innerWidth + " x " + window.innerHeight
                     + "<br>canvas<br>"
                     + t.renderer.domElement.width + " x " + t.renderer.domElement.height;
             }
             getRes()
             window.addEventListener('resize', setResolution, false);
+
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////
+            menuSetRange.oninput = setOverrideMaterial;
+            chekbox.onclick = setOverrideMaterial;
+
+
+            window.addEventListener("load", () => {
+                chekbox.innerHTML = `
+                
+                <img src="${PATH}media/back.jpg" id="menuBack"> <span style="font-size: 25px;">материал</span> <br>
+                <img src="${PATH}media/off.png" id="menuNo">
+                <img src="${PATH}media/smooth.jpg" id="menuSmooth">
+                <img src="${PATH}media/flat.jpg" id="menuAngular">
+                <img src="${PATH}media/w.jpg" id="menuW">`
+                setTimeout(()=>{
+                    menuBack.onclick=()=>{
+                        base.style.display = "block"
+                        setMat.style.display = "none"
+                    }
+                    MenuMaterial.onclick=()=>{
+                        base.style.display = "none"
+                        setMat.style.display = "block"
+                    }
+                },200)
+            })
+
         })
     /////////////////////////////////////////////////////////////////////////////////////////
     //                                                                                     //
@@ -72,51 +95,57 @@ export default function Viewer() {
     //                                                                                     //     
     /////////////////////////////////////////////////////////////////////////////////////////
     this.scene = new THREE.Scene();
-    t.scene.background = new THREE.Color(0x003311)
+    t.scene.background = new THREE.Color(0x223344)
+    new THREE.TextureLoader().load(PATH + "media/360.jpg", (texture) => {
+        texture.mapping = THREE.EquirectangularReflectionMapping;
+        t.scene.environment = texture
+    })
+
+
     //cubemap
     this.setCubemap = (
-        path = PATH + 'cubemap/Park2/',
+        path = PATH + 'cubemap/poselok/',
+        pathMiniCube,
         format = '.jpg',
-        front = "negz",
-        right = "negx",
-        back = "posz",
-        left = "posx",
-        top = "posy",
-        botton = "negy",
-        pathMiniCube = PATH + "cubemap/Park2mini/"  // если нет фона с маленьким разрешением поставить false или 0
+        front = "front",
+        right = "right",
+        back = "back",
+        left = "left",
+        top = "top",
+        bottom = "bottom",
     ) => {
-        let cubemapComplite = 0
-        ////// норм куб карта
-        let cubemap = new THREE.CubeTextureLoader().load([
-            path + left + format,
-            path + right + format,
-            path + top + format,
-            path + botton + format,
-            path + back + format,
-            path + front + format
-        ], () => { // callBack
-            t.scene.background = cubemap
-            t.scene.environment = cubemap
-            cubemapComplite = 1
-        });
-        //////// мелкий куб карта
         if (pathMiniCube) {
-            let cubemapMini = new THREE.CubeTextureLoader().load([
+            //////// мелкий куб карта
+            new THREE.CubeTextureLoader().load([
                 pathMiniCube + left + format,
                 pathMiniCube + right + format,
                 pathMiniCube + top + format,
-                pathMiniCube + botton + format,
+                pathMiniCube + bottom + format,
                 pathMiniCube + back + format,
                 pathMiniCube + front + format
-            ], () => { // callBack
-                if (!cubemapComplite) {
-                    t.scene.background = cubemapMini // если кубкарта пуста
-                    t.scene.environment = cubemapMini
-                }
+            ], (cube) => { // callBack  
+                t.scene.background = cube
+                t.scene.environment = cube
+                cubeNormal()
+            });
+        }
+        else cubeNormal()
+
+        function cubeNormal() {
+            ////// норм куб карта
+            new THREE.CubeTextureLoader().load([
+                path + left + format,
+                path + right + format,
+                path + top + format,
+                path + bottom + format,
+                path + back + format,
+                path + front + format
+            ], (cube) => { // callBack
+                t.scene.background = cube
+                t.scene.environment = cube
             });
         }
     }
-    t.setCubemap()
 
     ///////////////// массив сеток для коллизии
     this.ArreyCollisionMesh = t.scene.children
@@ -131,7 +160,7 @@ export default function Viewer() {
     let stats;  // fps
 
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
-
+    t.scene.add(t.camera)
     ////////////////////////////////////////// меняет разрешение canvas
     function resize() {
         t.camera.aspect = window.innerWidth / window.innerHeight;
@@ -164,19 +193,25 @@ export default function Viewer() {
 
 
     ///////////////////////// demo
-    let g = new THREE.BoxBufferGeometry(10, 10, 10)
-    for (let i = 0; i < 100; i++) {                    // кубики
+    function f(a) {
+        return Math.random() * a - a / 2
+    }
+    let g = new THREE.BoxBufferGeometry(0.01, 0.01, 0.01)
+    for (let i = 0; i < 1000; i++) {                    // кубики
+        let a = t.scene.children.length * 2
         let mat = new THREE.MeshPhongMaterial({ color: Math.random() * 0xffffff.toFixed(0) })
         let mesh = new THREE.Mesh(g, mat);
-        mesh.position.set(Math.random() * 400 - 200, Math.random() * 400 - 200, Math.random() * -400)
+        mesh.position.set(f(a), f(a), f(a))
+        mesh.scale.addScalar(mesh.position.distanceTo(t.scene.position) ** 1.5)
         this.scene.add(mesh)
     }
     /// шрифт и материал
     let font, material = new THREE.MeshPhysicalMaterial({
         metalness: 0.5,
         roughness: 0.05,
-        envMapIntensity: 3,
+        //envMapIntensity: 3,
     })
+    //t.scene.overrideMaterial = material
     /////// загрузка 3D шрифта
     var loader = new THREE.FontLoader();
     loader.load(PATH + 'fonts/droid/droid_serif_bold.typeface.json', function (response) {
@@ -234,6 +269,36 @@ export default function Viewer() {
     window.addEventListener("touchstart", () => mode = "sensor");
     window.addEventListener("mousedown", () => mode = "mouse");
 
+    ////////////////// доп эффект /////
+    let lightCamera = new THREE.PointLight(0xffffff, 0)
+    t.camera.add(lightCamera)
+    this.overrideMaterial = new THREE.MeshPhysicalMaterial({ transparent: true });
+    function setOverrideMaterial(even) {
+        let e = even.target.id
+        
+        
+        if (even.currentTarget.id == "chekbox"){
+            if (e == "menuBack") return
+            if (e == "menuNo") t.scene.overrideMaterial = 0
+            else t.scene.overrideMaterial = t.overrideMaterial
+
+            if (e == "menuSmooth") t.overrideMaterial.flatShading = false
+            if (e == "menuAngular") t.overrideMaterial.flatShading = true
+            if (e == "menuW") t.overrideMaterial.wireframe = !t.overrideMaterial.wireframe
+        }
+
+        if (even.currentTarget.id == "menuSetRange"){
+            t.scene.overrideMaterial = t.overrideMaterial
+            t.overrideMaterial.roughness = menuGl.value
+            t.overrideMaterial.metalness = menuMetall.value
+            t.overrideMaterial.opacity = menuOpasity.value
+            t.overrideMaterial.color.setStyle(menuColor.value)
+            lightCamera.intensity = menuLCam.value
+            t.ambientLight.intensity = menuLA.value
+        }
+
+        t.overrideMaterial.needsUpdate = true
+    }
     //////////////------------------------АНИМАЦИЯ------------------------///
     function animate() {
 

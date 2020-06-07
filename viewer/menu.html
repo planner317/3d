@@ -1,5 +1,6 @@
+<div id="menu">
+    <div id="base">
 
-    <div id="menu">
         <div class="conteierWind">
             <div id="full">полный<br>экран</div>
             <div id="fps"></div>
@@ -12,107 +13,148 @@
                 <input type="button" value="480" value="480">
                 <input type="button" value="360" value="360">
             </div>
-            <div id="resView"></div><br>
+            <div>
+
+                <div id="resView"></div>
+                <input type="button" id="MenuMaterial" value="материал">
+            </div>
         </div>
 
         <div id="speedView">чувствительность сенсора 0.75</div>
         <input type="range" id="speedSet" step="0.01" value="0.75" min="0.1" max="1">
+
     </div>
 
-    <div id="menuView">≡
+
+
+    <div style="display: none;" id="setMat">
+        
+        <div id="chekbox">
+        </div>
+        <div style="display: flex; line-height: 50px;" class="mat">
+            <div style="text-align: right;">
+                глянец<br>
+                металл<br>
+                прозрачность<br>
+                свет камеры<br>
+                свет общий<br>
+                цвет<br>
+            </div>
+            <div style="display: block;" id="menuSetRange">
+
+                <input type="range" name="" min="0" max="1" step="0.01" value="0" id="menuGl">
+                <input type="range" name="" min="0" max="1" step="0.01" value="1" id="menuMetall">
+                <input type="range" name="" min="0" max="1" step="0.01" value="1" id="menuOpasity">
+                <input type="range" name="" min="0" max="2" step="0.01" value="0.5" id="menuLCam">
+                <input type="range" name="" min="0" max="3" step="0.01" value="0.1" id="menuLA">
+                <input type="color" id="menuColor" value="#ffffff">
+            </div>
+        </div>
     </div>
+</div>
 
-    <div id="info" style="position: fixed; bottom: 20px; text-align: center; width: 100%;">
-        WASD ↑←↓→ движение, SHIFT - турбо, EC - вверх вниз.
-    </div>
+<div id="menuView">≡
+</div>
 
-    <style>
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background: #000;
-            color: white;
-            font-size: 16px;
-        }
+<div id="info" style="position: fixed; bottom: 20px; text-align: center; width: 100%;">
+    WASD ↑←↓→ движение, SHIFT - турбо, EC - вверх вниз.
+</div>
 
-        #menuView {
-            z-index: 1;
-            font-size: 50px;
-            position: fixed;
-            top: 0;
-            right: 30px;
-            font-family: monospace;
-            cursor: pointer;
-            text-shadow: 2px 2px black;
-        }
+<style>
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: #223344;
+        color: white;
+        font-size: 16px;
+    }
 
-        #menu {
-            z-index: 1;
-            position: fixed;
-            top: 0;
-            right: 0;
-            max-width: 340px;
-            min-width: 200px;
-            width: -webkit-fill-available;
-            margin: 10px;
-            padding: 10px;
-            background: #0008;
-            font-size: 20px;
-            visibility: hidden;
-            border-radius: 20px;
-            font-family: monospace;
-        }
+    #menuView {
+        z-index: 1;
+        font-size: 50px;
+        position: fixed;
+        top: 0;
+        right: 30px;
+        font-family: monospace;
+        cursor: pointer;
+        text-shadow: 2px 2px black;
+    }
 
-        #menu #full {
-            padding: 10px;
-            margin-right: 10px;
-            display: inline-block;
-            font-family: auto;
-            line-height: 28px;
-            text-align: center;
-            background: white;
-            color: black;
-            font-size: 30px;
-            border: outset 4px #eee;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 800;
-        }
+    #backMenu {}
 
-        .resHed {
-            text-align: center;
-            width: -webkit-fill-available;
-            margin: 10px;
-        }
+    #menu {
+        z-index: 1;
+        position: fixed;
+        top: 0;
+        right: 0;
+        max-width: 340px;
+        min-width: 200px;
+        width: -webkit-fill-available;
+        margin: 10px;
+        padding: 10px;
+        background: #0008;
+        font-size: 20px;
+        visibility: hidden;
+        border-radius: 20px;
+        font-family: monospace;
+    }
 
-        #menu #speedSet {
-            width: -webkit-fill-available;
-            cursor: pointer;
-        }
+    #menu #full {
+        padding: 10px;
+        margin-right: 10px;
+        display: inline-block;
+        font-family: auto;
+        line-height: 28px;
+        text-align: center;
+        background: white;
+        color: black;
+        font-size: 30px;
+        border: outset 4px #eee;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: 800;
+    }
 
-        .conteinerRes, .conteierWind {
-            display: flex;
-            margin-bottom: 20px;
-        }
+    .resHed {
+        text-align: center;
+        width: -webkit-fill-available;
+        margin: 10px;
+    }
 
-        .conteinerRes input {
-            width: 134px;
-            flex: 1;
-            padding: 5px;
-            margin: 5px 0;
-            border: outset 4px #eee;
-            border-radius: 20px;
-            background: white;
-            color: black;
-            font-weight: 800;
-            line-height: 10px;
-        }
+    #menu #speedSet {
+        width: -webkit-fill-available;
+        cursor: pointer;
+    }
 
-        #resView ,#domResolution{
-            text-align: center;
-            flex: 1;
-            line-height: 25px;
-        }
-    </style>
+    .conteinerRes,
+    .conteierWind {
+        display: flex;
+        margin-bottom: 20px;
+    }
+
+    .conteinerRes input {
+        width: 134px;
+        flex: 1;
+        padding: 5px;
+        margin: 5px 0;
+        border: outset 4px #eee;
+        border-radius: 20px;
+        background: white;
+        color: black;
+        font-weight: 800;
+        line-height: 10px;
+    }
+
+    #resView,
+    #domResolution {
+        text-align: center;
+        flex: 1;
+        line-height: 25px;
+    }
+
+    .mat input {
+        width: -webkit-fill-available;
+    }
+</style>
