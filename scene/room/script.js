@@ -46,6 +46,8 @@ new MTLLoader(manager)
 function start() {
     load.remove()
     clearInterval(preload);
+    viewer.ambientLight.visible = true;
+    viewer.lightCamera.visible = false
     viewer.deleteAllMesh();
     viewer.ambientLight.intensity = 1;
     viewer.scene.remove(viewer.sunLight);
@@ -82,7 +84,7 @@ function start() {
         mirrorRoom.getObjectByName("ssss"),
         room.getObjectByName("windowDark"),
         mirrorRoom.getObjectByName("windowDark"),
-        ghost,
+        ghost, ligtScreen, mirrorRoom.children[15]
     ];
     let texture = new THREE.VideoTexture(video);
     visible[0].material.emissiveMap = texture;
@@ -135,7 +137,7 @@ function event() {
             night()
         }
         ////////////// призрак скример и вырубить
-        if (viewer.camera.position.distanceTo() > -30 && nightflag) {
+        if (viewer.camera.position.distanceTo(ghost.position) < 30 && nightflag) {
             day()
         }
     }

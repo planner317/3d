@@ -45,6 +45,8 @@ new MTLLoader(manager)
 function start() {
     load.remove()
     clearInterval(preload);
+    viewer.ambientLight.visible = true;
+    viewer.lightCamera.visible = false
     viewer.deleteAllMesh();
     viewer.ambientLight.intensity = 1.7;
     viewer.scene.remove(viewer.sunLight);

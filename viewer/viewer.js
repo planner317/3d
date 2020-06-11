@@ -2,7 +2,7 @@ import * as THREE from "./jsm/three.module.js";
 import TouchControl from "./jsm/controls/touchControl.js";
 import keyBordMouseControl from "./jsm/controls/MouseAndKeyboardControlsFirstPerson.js"
 import Stats from "./jsm/stats.module.js"
-//window.THREE = THREE;
+window.THREE = THREE;
 
 const PATH = import.meta.url.match(/.+\//)[0]   //текущая папка
 
@@ -10,96 +10,13 @@ const PATH = import.meta.url.match(/.+\//)[0]   //текущая папка
 export default function Viewer() {
     let t = this
     let resolution = 720;
-    ////////////////////// менюшка ///////////////////////
-    fetch(PATH + "menu.html")
-        .then(res => res.text())
-        .then(data => {
-            let d = document.createElement("div")
-            document.body.prepend(d)
-            d.innerHTML += data
-            menu.onclick = (e) => {
-                //e.preventDefault()
-                e.stopPropagation()
-            }
-            // клик по бургеру показывает меню
-            menuView.onclick = (e) => {
-                if (menu.style.visibility == "visible") { menu.style.visibility = "hidden"; fpsView = false }
-                else { menu.style.visibility = "visible"; fpsView = true }
-                e.stopPropagation()
-            }
-            // полный экран
-            full.onclick = () => {
-                if (document.fullscreen) document.exitFullscreen()
-                else document.documentElement.requestFullscreen()
-            }
-            speedSet.oninput = () => {
-                speedView.innerText = "чувствительность сенсора " + speedSet.value;
-                t.touchControl.speed = speedSet.value
-            }
 
-            window.addEventListener("mousedown", hideInfo)
-            window.addEventListener("touchstart", hideInfo)
-
-            function hideInfo() {
-                info.remove();
-                window.removeEventListener("mousedown", hideInfo)
-                window.removeEventListener("touchstart", hideInfo)
-            }
-            // клик по разрешению
-            domResolution.onclick = setResolution;
-            function setResolution(e) {
-                if (e.target.tagName == "INPUT") resolution = e.target.value
-                resize(); getRes()
-            }
-            //////////////////////////////// FPS
-            stats = new Stats()
-            fps.append(stats.dom);
-
-            function getRes() {                     // записывает изменеие в меню
-                resView.innerHTML = window.innerWidth + " x " + window.innerHeight
-                    + "<br>canvas<br>"
-                    + t.renderer.domElement.width + " x " + t.renderer.domElement.height;
-            }
-            getRes()
-            window.addEventListener('resize', setResolution, false);
-
-            ///////////////////////////////////////////////////////////////////////////////////////////////////////
-            menuSetRange.oninput = setOverrideMaterial;
-            chekbox.onclick = setOverrideMaterial;
-
-
-            window.addEventListener("load", () => {
-                chekbox.innerHTML = `
-                
-                <img src="${PATH}media/back.jpg" id="menuBack"> <span style="font-size: 25px;">материал</span> <br>
-                <img src="${PATH}media/off.png" id="menuNo">
-                <img src="${PATH}media/smooth.jpg" id="menuSmooth">
-                <img src="${PATH}media/flat.jpg" id="menuAngular">
-                <img src="${PATH}media/w.jpg" id="menuW">`
-                setTimeout(()=>{
-                    menuBack.onclick=()=>{
-                        base.style.display = "block"
-                        setMat.style.display = "none"
-                    }
-                    MenuMaterial.onclick=()=>{
-                        base.style.display = "none"
-                        setMat.style.display = "block"
-                    }
-                },200)
-            })
-
-        })
     /////////////////////////////////////////////////////////////////////////////////////////
     //                                                                                     //
-    //                                                                                     //
-    //                                                                                     //     
     /////////////////////////////////////////////////////////////////////////////////////////
     this.scene = new THREE.Scene();
     t.scene.background = new THREE.Color(0x223344)
-    new THREE.TextureLoader().load(PATH + "media/360.jpg", (texture) => {
-        texture.mapping = THREE.EquirectangularReflectionMapping;
-        t.scene.environment = texture
-    })
+
 
 
     //cubemap
@@ -161,6 +78,11 @@ export default function Viewer() {
 
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
     t.scene.add(t.camera)
+
+    this.lightCamera = new THREE.PointLight(0xffffff, 1)
+    t.lightCamera.layers.enable(20)
+    t.camera.add(t.lightCamera)
+
     ////////////////////////////////////////// меняет разрешение canvas
     function resize() {
         t.camera.aspect = window.innerWidth / window.innerHeight;
@@ -182,12 +104,14 @@ export default function Viewer() {
     //////////////////////// глобальное освещение
     this.ambientLight = new THREE.AmbientLight(0xffffff);
     t.ambientLight.intensity = 0.2;
+    t.ambientLight.visible = false;
     t.scene.add(t.ambientLight);
 
     //////////////////////// свет от солнца
     this.sunLight = new THREE.DirectionalLight();
     t.sunLight.position.set(7, 20, 10);
     t.sunLight.lookAt(t.scene.position);
+    t.sunLight.visible = false;
     t.scene.add(t.sunLight);
 
 
@@ -211,7 +135,7 @@ export default function Viewer() {
         roughness: 0.05,
         //envMapIntensity: 3,
     })
-    //t.scene.overrideMaterial = material
+
     /////// загрузка 3D шрифта
     var loader = new THREE.FontLoader();
     loader.load(PATH + 'fonts/droid/droid_serif_bold.typeface.json', function (response) {
@@ -269,36 +193,7 @@ export default function Viewer() {
     window.addEventListener("touchstart", () => mode = "sensor");
     window.addEventListener("mousedown", () => mode = "mouse");
 
-    ////////////////// доп эффект /////
-    let lightCamera = new THREE.PointLight(0xffffff, 0)
-    t.camera.add(lightCamera)
-    this.overrideMaterial = new THREE.MeshPhysicalMaterial({ transparent: true });
-    function setOverrideMaterial(even) {
-        let e = even.target.id
-        
-        
-        if (even.currentTarget.id == "chekbox"){
-            if (e == "menuBack") return
-            if (e == "menuNo") t.scene.overrideMaterial = 0
-            else t.scene.overrideMaterial = t.overrideMaterial
 
-            if (e == "menuSmooth") t.overrideMaterial.flatShading = false
-            if (e == "menuAngular") t.overrideMaterial.flatShading = true
-            if (e == "menuW") t.overrideMaterial.wireframe = !t.overrideMaterial.wireframe
-        }
-
-        if (even.currentTarget.id == "menuSetRange"){
-            t.scene.overrideMaterial = t.overrideMaterial
-            t.overrideMaterial.roughness = menuGl.value
-            t.overrideMaterial.metalness = menuMetall.value
-            t.overrideMaterial.opacity = menuOpasity.value
-            t.overrideMaterial.color.setStyle(menuColor.value)
-            lightCamera.intensity = menuLCam.value
-            t.ambientLight.intensity = menuLA.value
-        }
-
-        t.overrideMaterial.needsUpdate = true
-    }
     //////////////------------------------АНИМАЦИЯ------------------------///
     function animate() {
 
@@ -341,4 +236,210 @@ export default function Viewer() {
         else t.rayDirectionMove = 0
     }
     animate();
+
+
+
+
+    ////////////////////// менюшка ///////////////////////
+    fetch(PATH + "menu.html")
+        .then(res => res.text())
+        .then(data => {
+            let d = document.createElement("div")
+            document.body.prepend(d)
+            d.innerHTML += data
+
+            menu.onclick = (e) => {
+                //e.preventDefault()
+                e.stopPropagation()
+            }
+            // клик по бургеру показывает меню
+            menuView.onclick = (e) => {
+                if (menu.style.visibility == "visible") { menu.style.visibility = "hidden"; fpsView = false }
+                else { menu.style.visibility = "visible"; fpsView = true }
+                e.stopPropagation()
+            }
+            // полный экран
+            full.onclick = () => {
+                if (document.fullscreen) document.exitFullscreen()
+                else document.documentElement.requestFullscreen()
+            }
+            speedSet.oninput = () => {
+                speedView.innerText = "чувствительность сенсора " + speedSet.value;
+                t.touchControl.speed = speedSet.value
+            }
+
+            window.addEventListener("mousedown", hideInfo)
+            window.addEventListener("touchstart", hideInfo)
+
+            function hideInfo() {
+                info.remove();
+                window.removeEventListener("mousedown", hideInfo)
+                window.removeEventListener("touchstart", hideInfo)
+            }
+            // клик по разрешению
+            domResolution.onclick = setResolution;
+            function setResolution(e) {
+                if (e.target.tagName == "INPUT") resolution = e.target.value
+                resize(); getRes()
+            }
+            //////////////////////////////// FPS
+            stats = new Stats()
+            fps.append(stats.dom);
+
+            function getRes() {                     // записывает изменеие в меню
+                resView.innerHTML = window.innerWidth + " x " + window.innerHeight
+                    + "<br>canvas<br>"
+                    + t.renderer.domElement.width + " x " + t.renderer.domElement.height;
+            }
+            getRes()
+            window.addEventListener('resize', setResolution, false);
+
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            setMat.innerHTML = `             
+        <img src="${PATH}media/back.jpg" id="menuBack"> <span style="font-size: 25px;">материал</span> <br>
+        <img src="${PATH}media/off.png" id="menuNo">
+        <img src="${PATH}media/1.jpg" id="menue3">
+        <img src="${PATH}media/2.jpg" id="menue4">
+        <img src="${PATH}media/3.jpg" id="menuW">
+        <img src="${PATH}media/4.jpg" id="menuWfog">
+        <img src="${PATH}media/5.jpg" id="menuWfog2">
+        <img src="${PATH}media/6.jpg" id="menuWfog3">
+        <img src="${PATH}media/7.jpg" id="menue1">
+        <img src="${PATH}media/8.jpg" id="menue2">
+        `
+
+            setTimeout(() => {
+                ////////////////// доп эффект /////
+
+
+                let basic = new THREE.MeshBasicMaterial()
+                let physic = new THREE.MeshPhysicalMaterial();
+                let physic2 = new THREE.MeshPhysicalMaterial({ metalness: 1, roughness: 0 });
+                let physic3 = new THREE.MeshPhysicalMaterial({ metalness: 2, roughness: 0 });
+                let physic4 = new THREE.MeshPhysicalMaterial({ metalness: 3, roughness: 0.77 });
+                let physic5
+
+                let e1
+                new THREE.TextureLoader().load(PATH + "media/360.jpg", (texture) => {
+                    texture.mapping = THREE.EquirectangularReflectionMapping;
+                    e1 = texture
+                })
+                new THREE.TextureLoader().load(PATH + "media/normal/pebble_normal.JPG", (texture) => {
+                    texture.repeat.set(10, 10)
+                    texture.wrapS = THREE.RepeatWrapping
+                    texture.wrapT = THREE.RepeatWrapping
+                    physic5 = new THREE.MeshPhysicalMaterial({ normalMap: texture, metalness: 0.5, roughness: 0.5 });
+                })
+                function setOverrideMaterial(even) {
+                    t.scene.traverse((e) => {
+                        if (e.type == "Mesh") e.layers.enable(20)
+                    })
+                    let e = even.target.id
+
+                    if (e == "menuBack") return
+                    if (e == "menuNo") {
+                        t.scene.environment = 0
+                        t.scene.overrideMaterial = 0
+                        t.scene.fog = 0;
+                        t.camera.far = 10000
+                        t.lightCamera.visible = false
+                        t.camera.layers.set(0)
+                    }
+                    else {
+                        t.camera.layers.set(20)
+                        t.scene.background = new THREE.Color(0, 0, 0)
+                        t.scene.overrideMaterial = physic
+                        t.camera.far = 10000
+                    }
+
+                    if (e == "menuW") {
+                        t.scene.environment = 0
+                        t.scene.overrideMaterial = physic
+                        t.scene.fog = 0
+                        t.scene.overrideMaterial.wireframe = true
+                        t.scene.overrideMaterial.flatShading = false
+                        t.lightCamera.visible = true
+                        t.camera.far = 10000
+                    }
+                    if (e == "menuWfog") {
+                        t.scene.environment = 0
+                        t.scene.overrideMaterial = basic
+                        t.scene.fog = new THREE.Fog(0, 1, 1000)
+                        t.scene.overrideMaterial.wireframe = true
+                        t.scene.overrideMaterial.flatShading = false
+                        t.lightCamera.visible = false
+                        t.camera.far = 1000
+                    }
+                    if (e == "menuWfog2") {
+                        t.scene.environment = 0
+                        t.scene.overrideMaterial = basic
+                        t.scene.fog = new THREE.Fog(0, 1, 500)
+                        t.scene.overrideMaterial.wireframe = false
+                        t.scene.overrideMaterial.flatShading = false
+                        t.camera.far = 500
+                        t.lightCamera.visible = false
+                    }
+                    if (e == "menuWfog3") {
+                        t.scene.environment = 0
+                        t.scene.overrideMaterial = basic
+                        t.scene.fog = new THREE.Fog(0, 1, 100)
+                        t.scene.overrideMaterial.wireframe = false
+                        t.scene.overrideMaterial.flatShading = false
+                        t.lightCamera.visible = false
+                        t.camera.far = 100
+                    }
+                    if (e == "menue1") {
+                        t.scene.overrideMaterial = physic2
+                        t.scene.fog = 0
+                        t.scene.environment = e1
+                        t.scene.overrideMaterial.wireframe = false
+                        t.scene.overrideMaterial.flatShading = false
+                        t.lightCamera.visible = false
+                        t.camera.far = 10000
+                    }
+                    if (e == "menue2") {
+                        t.scene.overrideMaterial = physic3
+                        t.scene.environment = e1
+                        t.scene.fog = 0
+                        t.scene.overrideMaterial.wireframe = false
+                        t.scene.overrideMaterial.flatShading = false
+                        t.lightCamera.visible = true
+                        t.camera.far = 10000
+                    }
+                    if (e == "menue3") {
+                        t.scene.overrideMaterial = physic4
+                        t.scene.environment = e1
+                        t.scene.fog = 0
+                        t.scene.overrideMaterial.wireframe = false
+                        t.scene.overrideMaterial.flatShading = true
+                        t.lightCamera.visible = true
+                        t.camera.far = 10000
+                    }
+                    if (e == "menue4") {
+                        t.scene.overrideMaterial = physic5
+                        t.scene.environment = e1
+                        t.scene.fog = 0
+                        t.scene.overrideMaterial.wireframe = false
+                        t.scene.overrideMaterial.flatShading = false
+                        t.lightCamera.visible = true
+                        t.camera.far = 10000
+                    }
+
+
+                    t.camera.updateProjectionMatrix()
+                    if (t.scene.overrideMaterial) t.scene.overrideMaterial.needsUpdate = true
+                }
+
+                setMat.onclick = setOverrideMaterial;
+                menuBack.onclick = () => {
+                    menuBase.style.display = "block"
+                    setMat.style.display = "none"
+                }
+                MenuMaterial.onclick = () => {
+                    menuBase.style.display = "none"
+                    setMat.style.display = "block"
+                }
+            }, 2000)
+        })
 }
