@@ -69,7 +69,7 @@ export default function Viewer() {
 
     let fpsView = false;
 
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer = new THREE.WebGLRenderer();
 
     document.body.append(t.renderer.domElement);
 
