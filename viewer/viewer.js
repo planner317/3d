@@ -109,12 +109,15 @@ export default function Viewer() {
 
     //////////////////////// свет от солнца
     this.sunLight = new THREE.DirectionalLight();
-    t.sunLight.position.set(7, 20, 10);
+    t.sunLight.position.set(70, 200, 100);
     t.sunLight.lookAt(t.scene.position);
     t.sunLight.visible = false;
     t.scene.add(t.sunLight);
 
-
+    /////////////////////////////// пол
+    let geometryPlane = new THREE.PlaneGeometry(500,500)
+    this.floor = new THREE.Mesh(geometryPlane, new THREE.MeshStandardMaterial({color: 0x666666}))
+    t.floor.rotateX(-Math.PI/2)
 
     ///////////////////////// demo
     function f(a) {

@@ -12,8 +12,8 @@ let  preload, percentComplete
 
 var onProgress = function (xhr) {
     if (xhr.lengthComputable) {
-        percentComplete = xhr.loaded / xhr.total * 90;
-        viewer.createText(`${Math.round(percentComplete)}%`);
+        percentComplete = xhr.loaded / xhr.total * 100;
+        load.innerHTML=`загрузка ${Math.round(percentComplete)}%`
     }
 };
 
@@ -36,8 +36,8 @@ new MTLLoader(manager)
                     if (e.material)
                         if (e.material.name) {
                             if (e.material.name.slice(0, 4) == "alfa") {
-                                e.material.alphaTest = 0.5;
-                                e.material.premultipliedAlpha= true
+                               e.material.alphaTest = 0.5;
+                               // e.material.premultipliedAlpha= true
                                 e.material.side = 2
                                 
                             }
@@ -60,9 +60,10 @@ function start() {
     viewer.ambientLight.visible = true;
     viewer.lightCamera.visible = false
     viewer.deleteAllMesh();
+    viewer.camera.far=200
+    viewer.camera.updateProjectionMatrix()
     viewer.ambientLight.intensity = 0.5;
     viewer.renderer.toneMappingExposure=1.5
-    //viewer.scene.remove(viewer.sunLight);
     viewer.sunLight.visible = true
     viewer.sunLight.intensity = 1.5
     viewer.camera.position.set(0, 5, 0);
