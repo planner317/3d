@@ -9,8 +9,7 @@ window.viewer = viewer
 
 var clock = new THREE.Clock();
 let param ={
-    "dance1" : dance1,
-    "dance2" : dance2,
+    "animation1" : animationRig,
 }
 
 var onProgress = function (xhr) {
@@ -31,10 +30,8 @@ new FBXLoader(manager)
 
         window.raziel = object
         raziel.children[0].castShadow = true; 
-        raziel.children[0].receiveShadow=true
         raziel.children[0].material[3].side =2 // крылья 2 стороны
         raziel.children[0].material[3].alphaTest=0.5
-        raziel.children[0].material[0].specular.setRGB(2,2,2)
 
         window.mixer = new THREE.AnimationMixer(object);
 
@@ -52,14 +49,11 @@ function start() {
 
     load.remove()
     viewer.ambientLight.visible = true;
-    viewer.ambientLight.intensity = 0.1;
+    viewer.ambientLight.intensity = 0.0;
 
-    viewer.lightCamera.layers.disable(0)
     viewer.renderer.shadowMap.enabled = true;
-    viewer.renderer.outputEncoding = THREE.sRGBEncoding;
-
     viewer.sunLight.visible = true
-    viewer.sunLight.intensity = 1.5
+    viewer.sunLight.intensity = 1
     viewer.sunLight.shadow.camera.top = 200;
     viewer.sunLight.shadow.camera.bottom = - 200;
     viewer.sunLight.shadow.camera.left = - 200;
@@ -83,13 +77,8 @@ function animate() {
 
     requestAnimationFrame( animate );
 }
-function dance1(){
+function animationRig(a){
     action.stop()
-    action = mixer.clipAction(raziel.animations[0]);
-    action.play()
-}
-function dance2(){
-    action.stop()
-    action = mixer.clipAction(raziel.animations[1]);
+    action = mixer.clipAction(raziel.animations[a]);
     action.play()
 }
