@@ -16,7 +16,7 @@ export default function Viewer() {
     /////////////////////////////////////////////////////////////////////////////////////////
     this.scene = new THREE.Scene();
     t.scene.background = new THREE.Color(0x223344)
-
+    this.backupBackground =0;
 
 
     //cubemap
@@ -116,7 +116,7 @@ export default function Viewer() {
 
     /////////////////////////////// пол
     let geometryPlane = new THREE.PlaneGeometry(500,500)
-    this.floor = new THREE.Mesh(geometryPlane, new THREE.MeshStandardMaterial({color: 0x666666}))
+    this.floor = new THREE.Mesh(geometryPlane, new THREE.MeshStandardMaterial({color: 0x333333}))
     t.floor.rotateX(-Math.PI/2)
 
     ///////////////////////// demo
@@ -336,7 +336,7 @@ export default function Viewer() {
                 })
                 function setOverrideMaterial(even) {
                     t.scene.traverse((e) => {
-                        if (e.type == "Mesh") e.layers.enable(20)
+                        if (e.type == "Mesh" || e.type == "SkinnedMesh") e.layers.enable(20)
                     })
                     let e = even.target.id
 
@@ -348,6 +348,7 @@ export default function Viewer() {
                         t.camera.far = 10000
                         t.lightCamera.visible = false
                         t.camera.layers.set(0)
+                        t.scene.background = t.backupBackground
                     }
                     else {
                         t.camera.layers.set(20)
@@ -434,12 +435,15 @@ export default function Viewer() {
                     if (t.scene.overrideMaterial) t.scene.overrideMaterial.needsUpdate = true
                 }
 
-                setMat.onclick = setOverrideMaterial;
+                setMat.onclick = setOverrideMaterial
+
+                    
                 menuBack.onclick = () => {
                     menuBase.style.display = "block"
                     setMat.style.display = "none"
                 }
                 MenuMaterial.onclick = () => {
+                    t.backupBackground = t.scene.background.clone()
                     menuBase.style.display = "none"
                     setMat.style.display = "block"
                 }
