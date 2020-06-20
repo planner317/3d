@@ -443,7 +443,8 @@ export default function Viewer() {
                     setMat.style.display = "none"
                 }
                 MenuMaterial.onclick = () => {
-                    t.backupBackground = t.scene.background.clone()
+                    if (t.scene.background) t.backupBackground = t.scene.background.clone()
+                    else t.backupBackground =0
                     menuBase.style.display = "none"
                     setMat.style.display = "block"
                 }
