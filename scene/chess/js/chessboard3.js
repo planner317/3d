@@ -285,33 +285,27 @@
             if (cfg.hasOwnProperty('whitePieceColor') && typeof cfg.whitePieceColor === 'number') {
                 whitePieceColor = cfg.whitePieceColor;
             }
-            var WHITE_MATERIAL = new THREE.MeshStandardMaterial({
-                color: new THREE.Color(whitePieceColor),
-                shading:1,
-            });
+            var WHITE_MATERIAL = new THREE.MeshPhongMaterial({color: new THREE.Color(whitePieceColor)});
 
             var whitePieceSpecular = 0xCCFFFF;
             if (cfg.hasOwnProperty('whitePieceSpecular') && typeof cfg.whitePieceSpecular === 'number') {
                 whitePieceSpecular = cfg.whitePieceSpecular;
             }
             WHITE_MATERIAL.specular = new THREE.Color(whitePieceSpecular);
-            //WHITE_MATERIAL.transparent = true;
+            WHITE_MATERIAL.transparent = true;
 
             var blackPieceColor = 0x333333;
             if (cfg.hasOwnProperty('blackPieceColor') && typeof cfg.blackPieceColor === 'number') {
                 blackPieceColor = cfg.blackPieceColor;
             }
-            var BLACK_MATERIAL = new THREE.MeshStandardMaterial({
-                color: new THREE.Color(blackPieceColor),
-                shading:1,
-            });
+            var BLACK_MATERIAL = new THREE.MeshPhongMaterial({color: new THREE.Color(blackPieceColor)});
 
             var blackPieceSpecular = 0x553333;
             if (cfg.hasOwnProperty('blackPieceSpecular') && typeof cfg.blackPieceSpecular === 'number') {
                 blackPieceSpecular = cfg.blackPieceSpecular;
             }
             BLACK_MATERIAL.specular = new THREE.Color(blackPieceSpecular);
-            //BLACK_MATERIAL.transparent = true;
+            BLACK_MATERIAL.transparent = true;
 
             var textColor = 0x000000;
             if (cfg.hasOwnProperty('notationColor') && typeof cfg.notationColor === 'number') {
@@ -329,21 +323,13 @@
             if (cfg.hasOwnProperty('darkSquareColor') && typeof cfg.darkSquareColor === 'number') {
                 darkSquareColor = cfg.darkSquareColor;
             }
-            var darkSquareMaterial = new THREE.MeshStandardMaterial({
-                color: new THREE.Color(darkSquareColor),
-                shading:1,
-                metalness:0,
-            });
+            var darkSquareMaterial = new THREE.MeshPhongMaterial({color: new THREE.Color(darkSquareColor)});
 
             var lightSquareColor= 0xf0d9b5;
             if (cfg.hasOwnProperty('lightSquareColor') && typeof cfg.lightSquareColor === 'number') {
                 lightSquareColor = cfg.lightSquareColor;
             }
-            var lightSquareMaterial = new THREE.MeshStandardMaterial({
-                color: new THREE.Color(lightSquareColor),
-                shading:1,
-                metalness:0,
-            });
+            var lightSquareMaterial = new THREE.MeshPhongMaterial({color: new THREE.Color(lightSquareColor)});
             /*
             darkSquareMaterial.specularMap = THREE.ImageUtils.loadTexture("img/iris.png", undefined, function() {SPECULAR_MAPS_PENDING--;};);
             lightSquareMaterial.specularMap = THREE.ImageUtils.loadTexture("img/grain.jpg", undefined, function() {SPECULAR_MAPS_PENDING--;};);
@@ -501,7 +487,7 @@
                 if (cfg.hasOwnProperty('pieceSet') !== true ||
                     (typeof cfg.pieceSet !== 'string' &&
                     typeof cfg.pieceSet !== 'function')) {
-                    cfg.pieceSet = 'assets/chesspieces/classic/{piece}.json';
+                    cfg.pieceSet = 'assets/chesspieces/iconic/{piece}.json';
                 }
 
                 // rotate and zoom controls
@@ -655,8 +641,8 @@
                             CAMERA_CONTROLS.noRotate = true;
                         }
                         if (cfg.zoomControls) {
-                            CAMERA_CONTROLS.minDistance = 10;
-                            CAMERA_CONTROLS.maxDistance = 50;
+                            CAMERA_CONTROLS.minDistance = 12;
+                            CAMERA_CONTROLS.maxDistance = 22;
                             CAMERA_CONTROLS.enableZoom = true;
                         } else {
                             CAMERA_CONTROLS.enableZoom = false;
@@ -705,7 +691,7 @@
                     CAMERA.lookAt(new THREE.Vector3(0, -3, 0));
                 }, end, 1000);
             }
-            
+
             function buildPieceMesh(square, piece) {
 
                 var coords = squareCoordinates(square);
@@ -729,8 +715,6 @@
                     mesh.rotation.y = Math.PI;
                 }
                 mesh.castShadow = true;
-                mesh.receiveShadow = true
-                mesh.name = "piece"
                 return mesh;
             }
 
@@ -830,19 +814,19 @@
                     addLabelsToScene();
                 }
 
-                // for (var k = 0; k < LIGHT_POSITIONS.length; k++) {
-                //     var light = new THREE.SpotLight(0xAAAAAA);
-                //     var pos = LIGHT_POSITIONS[k];
-                //     light.position.set(pos[0], pos[1], pos[2]);
-                //     light.target = new THREE.Object3D();
-                //     if (k===0) {
-                //         light.castShadow = true;
-                //         light.shadow.bias = 0.0001;
-                //         light.shadow.mapSize.width = 2048;
-                //         light.shadow.mapSize.height = 2048;
-                //     }
-                //     SCENE.add(light);
-                // }
+                for (var k = 0; k < LIGHT_POSITIONS.length; k++) {
+                    var light = new THREE.SpotLight(0xAAAAAA);
+                    var pos = LIGHT_POSITIONS[k];
+                    light.position.set(pos[0], pos[1], pos[2]);
+                    light.target = new THREE.Object3D();
+                    if (k===0) {
+                        light.castShadow = true;
+                        light.shadow.bias = 0.0001;
+                        light.shadow.mapSize.width = 2048;
+                        light.shadow.mapSize.height = 2048;
+                    }
+                    SCENE.add(light);
+                }
                 var ambientLight = new THREE.AmbientLight(0x555555);
                 SCENE.add(ambientLight);
             }
@@ -1888,7 +1872,6 @@
                 } else {
                     loader.load(url, function (geometry) {
                         GEOMETRIES[name] = geometry;
-                        GEOMETRIES[name].computeBoundingBox();
                         geometry.computeBoundingBox();
                         if (cfg.hasOwnProperty('localStorage') === false || cfg.localStorage !== false) {
                             window.localStorage.setItem(url, JSON.stringify(geometry.toJSON()));
@@ -1969,11 +1952,11 @@
                             RANK_1_TEXT_MATERIAL.opacity = RANK_8_TEXT_MATERIAL.opacity = 1;
                         }
                     }
-                    //if (RENDER_FLAG || DRAG_INFO !== null || ANIMATION_HAPPENING || cameraMoved) {
+                    if (RENDER_FLAG || DRAG_INFO !== null || ANIMATION_HAPPENING || cameraMoved) {
                         var goahead = true;
                         if (cfg.hasOwnProperty('onRender') && typeof cfg.onRender === 'function') {
                             if (cfg.onRender(SCENE, deepCopy(SQUARE_MESH_IDS), deepCopy(PIECE_MESH_IDS), deepCopy(CURRENT_POSITION)) === false) {
-                               // goahead = false;
+                                goahead = false;
                             }
                         }
                         if (goahead) {
@@ -1989,14 +1972,10 @@
                         } else {
                             RENDER_FLAG = true;
                         }
-                   // }
+                    }
                 }
             }
             init();
-            window.chess ={};
-            window.chess.camera = CAMERA
-            window.chess.scene = SCENE
-            window.chess.renderer = RENDERER
             return widget;
         };
 
@@ -2004,6 +1983,4 @@
     window.ChessBoard3.webGLEnabled = webGLEnabled;
     window.ChessBoard3.fenToObj = fenToObj;
     window.ChessBoard3.objToFen = objToFen;
-
-    
 })();

@@ -1,28 +1,22 @@
-body{
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-}
 #container {
-    margin: 0;
     overflow: hidden;
+    width: 100%;
     position: relative;
     text-align: center;
 }
 #board {
     position: relative;
-    margin: 0 ;
+    margin: 0 auto;
     display: inline-block;
-    overflow: hidden;
 }
 #side {
     font-family: helvetica, sans-serif;
-    padding: 0px;
+    padding: 10px;
+    width: 480px;
     position: relative;
     margin: 0 auto;
     display: inline-block;
     vertical-align: top;
-    opacity: 0.5;
 }
 .buttonpanel {
     position: relative;

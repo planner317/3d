@@ -1,25 +1,24 @@
-
-$(function () {
+$(function() {
     var engine = new Worker("js/lozza.js");
     console.log("GUI: uci");
     engine.postMessage("uci");
     console.log("GUI: ucinewgame");
     engine.postMessage("ucinewgame");
 
-    var moveList = [], scoreList = [];
+    var moveList = [], scoreList =[];
 
     var cursor = 0;
 
     var player = 'w';
-    var entirePGN = ''; // больше, чем текущий PGN при нажатии кнопок перемотки
+    var entirePGN = ''; // longer than current PGN when rewind buttons are clicked
 
     var board;
-    var game = new Chess(), //проверка хода и т. д.
+    var game = new Chess(), // move validation, etc.
         statusEl = $('#status'),
         fenEl = $('#fen'),
         pgnEl = $('#pgn');
 
-    // верно, когда двигатель обрабатывает; ignore_mouse_events всегда true, если это установлено (также во время анимации)
+    // true for when the engine is processing; ignore_mouse_events is always true if this is set (also during animations)
     var engineRunning = false;
 
     // don't let the user press buttons while other button clicks are still processing
@@ -31,20 +30,20 @@ $(function () {
     }
 
     var scoreGauge = $('#gauge').SonicGauge({
-        label: 'WHITE\'S ADVANTAGE\n(centipawns)',
-        start: { angle: -230, num: -2000 },
-        end: { angle: 50, num: 2000 },
+        label:'WHITE\'S ADVANTAGE\n(centipawns)',
+        start: {angle: -230, num: -2000},
+        end: {angle: 50, num: 2000},
         markers: [
             {
                 gap: 200,
-                line: { "width": 12, "stroke": "none", "fill": "#cccccc" },
-                text: { "space": -22, "text-anchor": "middle", "fill": "#cccccc", "font-size": 10 }
+                line: {"width" : 12, "stroke" : "none", "fill" : "#cccccc"},
+                text: {"space": -22, "text-anchor" : "middle", "fill" : "#cccccc", "font-size" : 10}
             },
-            { gap: 100, line: { "width": 10, "stroke": "none", "fill": "#999999" } },
-            { gap: 50, line: { "width": 8, "stroke": "none", "fill": "#888888" } }
+            {gap: 100, line: {"width" : 10, "stroke" : "none", "fill" : "#999999"}},
+            {gap: 50, line: {"width" : 8, "stroke" : "none", "fill" : "#888888"}}
         ],
-        animation_speed: 200,
-        diameter: 300,
+        animation_speed : 200,
+        diameter : 300,
         style: {
             label: {
                 "font-size": 12,
@@ -56,7 +55,7 @@ $(function () {
             outline: {
                 fill: 'r#888888-#000000',
                 stroke: 'black',
-                'stroke-width': 1
+                'stroke-width' : 1
             }
         }
     });
@@ -66,29 +65,47 @@ $(function () {
     }
 
     function adjustBoardWidth() {
-        if (typeof chess !== "undefined") {
+        var fudge = 5;
+        var windowWidth = $(window).width();
+        var windowHeight = $(window).height();
+        var desiredBoardWidth = windowWidth - $('#side').outerWidth(true) - fudge;
+        var desiredBoardHeight = windowHeight - $('#header').outerHeight(true) - $('#banner').outerHeight(true) - $('#footer').outerHeight(true) - fudge;
 
-            chess.camera.aspect = window.innerWidth / window.innerHeight;
-            chess.camera.updateProjectionMatrix();
-            let coef = 1
-            chess.renderer.setSize(window.innerWidth * coef, window.innerHeight * coef);
+        var boardDiv = $('#board');
+        if (board3D) {
+            // Using chessboard3.js.
+            // Adjust for 4:3 aspect ratio
+            desiredBoardWidth &= 0xFFFC; // mod 4 = 0
+            desiredBoardHeight -= (desiredBoardHeight % 3); // mod 3 = 0
+            if (desiredBoardWidth * 0.75 > desiredBoardHeight) {
+                desiredBoardWidth = desiredBoardHeight * 4 / 3;
+            }
+            boardDiv.css('width', desiredBoardWidth);
+            boardDiv.css('height', (desiredBoardWidth * 0.75));
+        } else {
+            // This is a chessboard.js board. Adjust for 1:1 aspect ratio
+            desiredBoardWidth = Math.min(desiredBoardWidth, desiredBoardHeight);
+            boardDiv.css('width', desiredBoardWidth);
+            boardDiv.css('height', desiredBoardHeight);
         }
-        else setTimeout(adjustBoardWidth)
+        if (board !== undefined) {
+            board.resize();
+        }
     }
 
     function fireEngine() {
         engineRunning = true;
         updateStatus();
         var currentScore;
-        var msg = "position fen " + game.fen();
-        console.log("GUI: " + msg);
+        var msg = "position fen "+game.fen();
+        console.log("GUI: "+msg);
         engine.postMessage(msg);
         msg = 'go movetime ' + $('#moveTime').val();
-        console.log("GUI: " + msg);
+        console.log("GUI: "+msg);
         engine.postMessage(msg);
-        engine.onmessage = function (event) {
+        engine.onmessage = function(event) {
             var line = event.data;
-            console.log("ENGINE: " + line);
+            console.log("ENGINE: "+line);
             var best = parseBestMove(line);
             if (best !== undefined) {
                 var move = game.move(best);
@@ -167,8 +184,8 @@ $(function () {
                 status = "Game over (fifty move rule)."
             }
             swal({
-                title: "Game Over",
-                text: status,
+                title : "Game Over",
+                text : status,
                 type: 'info',
                 showCancelButton: false,
                 confirmButtonColor: "#DD6655",
@@ -194,7 +211,7 @@ $(function () {
         }
 
         fenEl.html(game.fen().replace(/ /g, '&nbsp;'));
-        var currentPGN = game.pgn({ max_width: 10, newline_char: "<br>" });
+        var currentPGN = game.pgn({max_width:10,newline_char:"<br>"});
         var matches = entirePGN.lastIndexOf(currentPGN, 0) === 0;
         if (matches) {
             currentPGN += "<span>" + entirePGN.substring(currentPGN.length, entirePGN.length) + "</span>";
@@ -209,7 +226,7 @@ $(function () {
     };
 
     // Set up chessboard
-    var onDrop = function (source, target) {
+    var onDrop = function(source, target) {
         if (engineRunning) {
             return 'snapback';
         }
@@ -240,13 +257,13 @@ $(function () {
 
     // update the board position after the piece snap
     // for castling, en passant, pawn promotion
-    var onSnapEnd = function () {
+    var onSnapEnd = function() {
         if (!game.game_over() && game.turn() !== player) {
             fireEngine();
         }
     };
 
-    var onMouseoverSquare = function (square) {
+    var onMouseoverSquare = function(square) {
         // get list of possible moves for this square
         var moves = game.moves({
             square: square,
@@ -267,7 +284,7 @@ $(function () {
         }
     };
 
-    var onMouseoutSquare = function (square, piece) {
+    var onMouseoutSquare = function(square, piece) {
         if (board.hasOwnProperty('removeGreySquares') && typeof board.removeGreySquares === 'function') {
             board.removeGreySquares();
         }
@@ -276,17 +293,8 @@ $(function () {
     function createBoard(pieceSet) {
         var cfg = {
             cameraControls: true,
-            showNotation: false,
             draggable: true,
             position: 'start',
-            zoomControls: true,
-            backgroundColor: 0x112233,
-            lightSquareColor: 0xffffff,
-            darkSquareColor: 0x999999,
-            whitePieceColor: 0xeeEEee,
-            blackPieceColor: 0x444444,
-
-
             onDrop: onDrop,
             onMouseoutSquare: onMouseoutSquare,
             onMouseoverSquare: onMouseoverSquare,
@@ -310,11 +318,13 @@ $(function () {
 
     adjustBoardWidth();
     board = createBoard();
-    window.board2 = board
-    window.addEventListener("resize", adjustBoardWidth)
+
+    $(window).resize(function() {
+        adjustBoardWidth();
+    });
 
     // Set up buttons
-    $('#startBtn').on('click', function () {
+    $('#startBtn').on('click', function() {
         var cursorStart = 0;
         if (player === 'b') {
             cursorStart = 1;
@@ -327,7 +337,7 @@ $(function () {
         board.position(game.fen());
         updateStatus();
     });
-    $('#backBtn').on('click', function () {
+    $('#backBtn').on('click', function() {
         if (cursor > 0) {
             cursor--;
             game.undo();
@@ -337,7 +347,7 @@ $(function () {
             updateStatus();
         }
     });
-    $('#forwardBtn').on('click', function () {
+    $('#forwardBtn').on('click', function() {
         if (cursor < moveList.length) {
             game.move(moveList[cursor]);
             var score = scoreList[cursor];
@@ -347,7 +357,7 @@ $(function () {
             updateStatus();
         }
     });
-    $('#endBtn').on('click', function () {
+    $('#endBtn').on('click', function() {
         while (cursor < moveList.length) {
             game.move(moveList[cursor++]);
         }
@@ -355,17 +365,17 @@ $(function () {
         updateScoreGauge(scoreList.length == 0 ? 0 : scoreList[cursor - 1]);
         updateStatus();
     });
-    $('#hintBtn').on('click', function () {
+    $('#hintBtn').on('click', function() {
         if (game.turn() === player) {
             engineRunning = true;
             var msg = "position fen " + game.fen();
-            console.log("GUI: " + msg);
+            console.log("GUI: "+msg);
             engine.postMessage(msg);
             msg = 'go movetime ' + $('#moveTime').val();
             console.log(msg);
             engine.postMessage(msg);
             engine.onmessage = function (event) {
-                console.log("ENGINE: " + event.data);
+                console.log("ENGINE: "+event.data);
                 var best = parseBestMove(event.data);
                 if (best !== undefined) {
                     var currentFEN = game.fen();
@@ -374,7 +384,7 @@ $(function () {
                     game.undo();
                     board.position(hintedFEN, true);
                     // give them a second to look before sliding the piece back
-                    setTimeout(function () {
+                    setTimeout(function() {
                         board.position(currentFEN, true);
                         engineRunning = false;
                     }, 1000); // give them a second to look
@@ -382,7 +392,7 @@ $(function () {
             }
         }
     });
-    $('#flipBtn').on('click', function () {
+    $('#flipBtn').on('click', function() {
         if (game.game_over()) {
             return;
         }
@@ -396,7 +406,7 @@ $(function () {
         setTimeout(fireEngine, 1000);
     });
 
-    $('#dimensionBtn').on('click', function () {
+    $('#dimensionBtn').on('click', function() {
         var dimBtn = $("#dimensionBtn");
         dimBtn.prop('disabled', true);
         var position = board.position();
@@ -404,7 +414,7 @@ $(function () {
         board.destroy();
         board3D = !board3D;
         adjustBoardWidth();
-        dimBtn.val(board3D ? '2D' : '3D');
+        dimBtn.val(board3D? '2D' : '3D');
         setTimeout(function () {
             board = createBoard($('#piecesMenu').val());
             board.orientation(orientation);
@@ -413,7 +423,7 @@ $(function () {
         });
     });
 
-    $("#setFEN").on('click', function (e) {
+    $("#setFEN").on('click', function(e) {
         swal({
             title: "SET FEN",
             text: "Enter a FEN position below:",
@@ -421,20 +431,20 @@ $(function () {
             inputType: "text",
             showCancelButton: true,
             closeOnConfirm: false
-        }, function (fen) {
+        }, function(fen) {
             if (fen === false) {
                 return; //cancel
             }
             fen = fen.trim();
             console.log(fen);
             var fenCheck = game.validate_fen(fen);
-            console.log("valid: " + fenCheck.valid);
+            console.log("valid: "+fenCheck.valid);
             if (fenCheck.valid) {
                 game = new Chess(fen);
                 console.log("GUI: ucinewgame");
                 engine.postMessage('ucinewgame');
                 console.log("GUI: position fen " + fen);
-                engine.postMessage('position fen ' + fen);
+                engine.postMessage('position fen '+ fen);
                 board.position(fen);
                 fenEl.val(fen);
                 pgnEl.empty();
@@ -442,13 +452,13 @@ $(function () {
                 swal("Success", "FEN parsed successfully.", "success");
             } else {
                 console.log(fenCheck.error);
-                swal.showInputError("ERROR: " + fenCheck.error);
+                swal.showInputError("ERROR: "+fenCheck.error);
                 return false;
             }
         });
     });
 
-    $("#setPGN").on('click', (function (e) {
+    $("#setPGN").on('click', (function(e) {
         swal({
             title: "SET PGN",
             text: "Enter a game PGN below:",
@@ -456,7 +466,7 @@ $(function () {
             inputType: "text",
             showCancelButton: true,
             closeOnConfirm: false
-        }, function (pgn) {
+        }, function(pgn) {
             if (pgn === false) {
                 return; // cancel
             }
@@ -488,7 +498,7 @@ $(function () {
         });
     }));
 
-    $("#resetBtn").on('click', function (e) {
+    $("#resetBtn").on('click', function(e) {
         player = 'w';
         game = new Chess();
         fenEl.empty();
@@ -504,8 +514,8 @@ $(function () {
         updateScoreGauge(0);
     });
 
-    $("#engineMenu").change(function () {
-        console.log($("#engineMenu").val());
+    $("#engineMenu").change(function() {
+       console.log($("#engineMenu").val());
         if (engine) {
             var jsURL = $("#engineMenu").val();
             engine.terminate();
@@ -525,7 +535,7 @@ $(function () {
         }
     });
 
-    $('#piecesMenu').change(function () {
+    $('#piecesMenu').change(function() {
         var fen = board.position();
         board.destroy();
         board = createBoard($('#piecesMenu').val());
@@ -534,88 +544,5 @@ $(function () {
     });
 
     updateStatus();
-
-    function setCubemap(
-        path = 'img/cubemap/zak/',
-        name = "zak.",
-        pathMiniCube,
-        format = '.jpg',
-        front = "front",
-        right = "right",
-        back = "back",
-        left = "left",
-        top = "top",
-        bottom = "bottom",
-    ) {
-        if (pathMiniCube) {
-            //////// мелкий куб карта
-            new THREE.CubeTextureLoader().load([
-                pathMiniCube + right + format,
-                pathMiniCube + left + format,
-                pathMiniCube + top + format,
-                pathMiniCube + bottom + format,
-                pathMiniCube + front + format,
-                pathMiniCube + back + format,
-            ], (cube) => { // callBack  
-                chess.scene.background = cube
-                chess.scene.environment = cube
-                cubeNormal()
-                dop()
-            });
-        }
-        else cubeNormal()
-
-        function cubeNormal() {
-            ////// норм куб карта
-            new THREE.CubeTextureLoader().load([
-                path + name + right + format,
-                path + name + left + format,
-                path + name + top + format,
-                path + name + bottom + format,
-                path + name + front + format,
-                path + name + back + format,
-            ], (cube) => { // callBack
-                chess.scene.background = cube
-                chess.scene.environment = cube
-                dop()
-            });
-        }
-    }
-    setCubemap()
-
-    //////////////////////////////// свет и тень /////
-
-    window.sunLight = new THREE.DirectionalLight();
-    sunLight.position.set(10, 10, 10);
-    sunLight.lookAt(chess.scene.position);
-    chess.scene.add(sunLight);
-
-    sunLight.shadow.mapSize.width = 1024;
-    sunLight.shadow.mapSize.height = 1024;
-    sunLight.shadow.radius = 1
-    sunLight.shadow.camera.top = 10;
-    sunLight.shadow.camera.bottom = - 10;
-    sunLight.shadow.camera.left = - 10;
-    sunLight.shadow.camera.right = 10;
-    sunLight.shadow.camera.near = 1;
-    sunLight.shadow.camera.far = 50;
-    sunLight.castShadow = true;  // отбрасывать тень
-
-    function dop(){
-
-        chess.scene.traverse((e) => {
-            
-            if (e.isMesh) {
-                // e.castShadow = true
-                // e.receiveShadow = true
-                e.material.envMap = chess.scene.environment
-                e.material.needsUpdate = true
-            }
-        });
-        
-    }
-    chess.renderer.shadowMap.enabled = true;
-    chess.scene.overrideMaterial = chess.scene.background
-
 });
 
