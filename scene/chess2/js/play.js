@@ -614,6 +614,11 @@ $(function () {
         });
         
     }
+    fullScreenDom.addEventListener("click", fullscreen)
+    function fullscreen(){
+        if (document.fullscreen) document.exitFullscreen()
+        else document.documentElement.requestFullscreen()
+    }
     chess.renderer.shadowMap.enabled = true;
     chess.scene.overrideMaterial = chess.scene.background
 
