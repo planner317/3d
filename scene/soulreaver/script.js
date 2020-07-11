@@ -58,7 +58,7 @@ let animations = [
     "180 turn (2)",
     "180 turn",
 ]
-let dance=[
+let dance = [
     "Slide Hip Hop Dance",
     "Wave Hip Hop Dance",
     "Breakdance Freezes (1)",
@@ -67,13 +67,12 @@ let dance=[
     "Robot Hip Hop Dance",
     "Hip Hop Dancing",
     "Shuffling",
-    "Thriller Part 3",
 ]
 
 var onProgress = function (xhr) {
     if (xhr.lengthComputable) {
         percentComplete = xhr.loaded / xhr.total * 100;
-        load.innerHtml = `${Math.round(percentComplete)}%`
+        load.innerHTML = `${Math.round(percentComplete)}%`
     }
 };
 
@@ -94,7 +93,7 @@ new FBXLoader(manager)
 
         new FBXLoader(manager)
             .setPath('model/raziel/')
-            .load('raziel.fbx', function (object) {
+            .load('raziel1.fbx', function (object) {
 
                 window.raziel = object
 
@@ -169,8 +168,6 @@ function start() {
     viewer.sunLight.shadow.camera.far = 500;
     viewer.sunLight.castShadow = true;  // отбрасывать тень
 
-    viewer.floor.receiveShadow = true;  // принимает тень
-    viewer.scene.add(viewer.floor)
 
     //viewer.scene.background = 0;
     viewer.camera.position.set(-53, 46, 114);
@@ -193,6 +190,9 @@ function start() {
     window.actionKain = mixerKain.clipAction(kain.animations[0]);
     animationRig("idle (3)", "kain")
 
+    viewer.floor.receiveShadow = true;  // принимает тень
+    viewer.scene.add(viewer.floor)
+
     animate()
 
 }
@@ -205,10 +205,9 @@ function animate() {
 
     requestAnimationFrame(animate);
 }
-
 function animationRig(file, mode = "kainAndRaziel") {
     new FBXLoader(manager)
-        .setPath('model/animate/')
+        .setPath('model/kain/animate/')
         .load(`${file}.fbx`, function (object) {
             if (mode == "kainAndRaziel" || mode == "kain") {
                 actionKain.stop()

@@ -2,7 +2,7 @@ import * as THREE from "./jsm/three.module.js";
 import TouchControl from "./jsm/controls/touchControl.js";
 import keyBordMouseControl from "./jsm/controls/MouseAndKeyboardControlsFirstPerson.js"
 import Stats from "./jsm/stats.module.js"
-window.THREE = THREE;
+//window.THREE = THREE;
 
 const PATH = import.meta.url.match(/.+\//)[0]   //текущая папка
 
@@ -10,7 +10,7 @@ const PATH = import.meta.url.match(/.+\//)[0]   //текущая папка
 export default function Viewer() {
     let t = this
     let resolution = 720;
-
+    this.userFunc = ()=>{}
     /////////////////////////////////////////////////////////////////////////////////////////
     //                                                                                     //
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -220,7 +220,9 @@ export default function Viewer() {
         t.renderer.render(t.scene, t.camera);
         oldPosition.position.copy(t.camera.position)
 
+        t.userFunc();
         requestAnimationFrame(animate);
+        
     }
 
     //////////////тормоз////

@@ -16,6 +16,7 @@ export default function MouseAndKeyboardControlsFirstPerson(camera, domElement) 
 	this.moveY = 0
 	this.moveZ = 0
 
+	let mult = 1
 	scope.speed = 1
 
 	var changeEvent = { type: 'change' };
@@ -62,7 +63,7 @@ export default function MouseAndKeyboardControlsFirstPerson(camera, domElement) 
 				break;
 
 			case 16: // shift
-				scope.speed = 2;
+				mult = 2;
 				break;
 		}
 	};
@@ -100,7 +101,7 @@ export default function MouseAndKeyboardControlsFirstPerson(camera, domElement) 
 				break;
 
 			case 16: // shift
-				scope.speed = 1;
+				mult = 1;
 				break;
 		}
 	}
@@ -230,9 +231,9 @@ export default function MouseAndKeyboardControlsFirstPerson(camera, domElement) 
 	};
 
 	this.update = function (run=1) {
-		this.moveForward(scope.moveZ * scope.speed * run)
-		this.moveRight(scope.moveX * scope.speed * run)
-		camera.position.y += scope.moveY * scope.speed * run
+		this.moveForward(scope.moveZ * mult * scope.speed * run)
+		this.moveRight(scope.moveX * mult * scope.speed * run)
+		camera.position.y += scope.moveY * mult * scope.speed * run
 	}
 
 	this.connect();

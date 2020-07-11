@@ -36,6 +36,7 @@ console.log(import.meta);
     t.v3 = new THREE.Vector3() /// это координаты куда должена смотеть камера 
 
     t.speed = 0.75;      // чувствительность
+    this.speedPosition = 1 // скорость перемещения
 
     t.lookActiv = false;    // флаг если палец перемещается по области look
     // DOM элементы точка где было нажатие на экран
@@ -181,13 +182,13 @@ console.log(import.meta);
         //  встает на один по X относительно локальной координаты камеры то есть чуть дальше куда смотрит камера это направление вперед
         t.v3.setFromMatrixColumn(camera.matrix, 0);
         // приплюсовывает в направление v3
-        camera.position.addScaledVector(t.v3, t.offsetXYH.x * run);
+        camera.position.addScaledVector(t.v3, t.offsetXYH.x * run * t.speedPosition);
         // перекручивает положение вектора v3 по оси Y
         t.v3.crossVectors(camera.up, t.v3);
         // еще раз приплюсовывает теперь в другую сторону
-        camera.position.addScaledVector(t.v3, -t.offsetXYH.y * run);
+        camera.position.addScaledVector(t.v3, -t.offsetXYH.y * run * t.speedPosition);
 
-        camera.position.y += -t.offsetXYV.y * run // подъем или спуск здесь все просто
+        camera.position.y += -t.offsetXYV.y * run * t.speedPosition// подъем или спуск здесь все просто
     }
 
     /////////////////////////////// создать круглый элемент
