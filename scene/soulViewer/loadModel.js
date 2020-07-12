@@ -4,6 +4,15 @@ import { GUI, gui } from '../../viewer/jsm/libs/dat.gui.module.js';
 let manager = new THREE.LoadingManager();
 let clock = new THREE.Clock();
 
+
+manager.onLoad = ()=>{      // после загрузки всех текстур
+    load.innerHTML = ""
+}
+manager.onProgress = (urlOfLastItemLoaded, itemsLoaded, itemsTotal) => {    // менеджер текстур что в файле fbx
+    load.innerHTML = "подгружаются текстуры " + itemsLoaded + "/" + itemsTotal + " " + urlOfLastItemLoaded
+  };
+
+
 let modelsList = {
     "raziel1": {
         name: "raziel1",
@@ -40,7 +49,7 @@ let modelsList = {
             let danceFolder = folderA.addFolder("Dance")            //создать папку в папке
             modelsList["kain"].dance.forEach(e => {
                 paramA[e] = () => {
-                    new FBXLoader(manager).setPath(`../soulreaver/model/animate/`) //загрузка анимации
+                    new FBXLoader(manager).setPath(`../soulreaver/model/kain/animate/`) //загрузка анимации
                         .load(`${e}.fbx`,
 
                             //аргумент колбек

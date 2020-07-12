@@ -2,23 +2,19 @@ import * as THREE from "../../viewer/jsm/three.module.js";
 import { FBXLoader } from "../../viewer/jsm/loaders/FBXLoader.js"
 import Viewer from "../../viewer/viewer.js";
 import LoadModel from "./loadModel.js";
-import { gui, GUI } from "../../viewer/jsm/libs/dat.gui.module.js";
 
 let viewer = new Viewer();
 window.viewer = viewer
-let loadModel = new LoadModel(viewer.scene);
 
 let minVec = new THREE.Vector3(-666, 10, -940)
 let maxVec = new THREE.Vector3(666, 666, 533)
 
-
 let percentComplete
-let clock = new THREE.Clock();
 
 
 var onProgress = function (xhr) {
     if (xhr.lengthComputable) {
-        percentComplete = xhr.loaded / xhr.total * 99;
+        percentComplete = xhr.loaded / xhr.total * 100;
         load.innerHTML = `загрузка ${Math.round(percentComplete)}%`
     }
 };
@@ -27,6 +23,12 @@ var onError = function () { };
 
 var manager = new THREE.LoadingManager();
 
+manager.onLoad = ()=>{      // после загрузки всех текстур
+    load.innerHTML = ""
+}
+manager.onProgress = (urlOfLastItemLoaded, itemsLoaded, itemsTotal) => {    // менеджер текстур что в файле fbx
+    load.innerHTML = "подгружаются текстуры " + itemsLoaded + "/" + itemsTotal + " " + urlOfLastItemLoaded
+  };
 
 new FBXLoader(manager)
     .setPath('model/vorodorRuin/')
@@ -55,15 +57,25 @@ function mapToEmessive(mat) {
 }
 
 function start() {
+    new LoadModel(viewer.scene);
     load.innerHTML = ""
-    window.addEventListener("click", playSound)
+
+    window.addEventListener("keypress", playSound)
+    window.addEventListener("touchstart", playSound)
     function playSound() {
         soundRain.play()
         soundRain.volume = 0.3
-        soundMusic.play()
-        soundMusic.volume = 0.3
-        if (!soundMusic.paused) window.removeEventListener("click", playSound)
+        player.play()
+        if (!player.paused){
+            window.removeEventListener("keypress",playSound)
+            window.removeEventListener("touchstart",playSound)
+        }
+        playList.childNodes.forEach((dom) => {
+            dom.classList.remove("select")
+        })
+        playList.childNodes[numSound].classList.add("select")
     }
+    
     viewer.renderer.toneMappingExposure = 1
     viewer.renderer.outputEncoding = 3001
     viewer.renderer.shadowMap.enabled = true;

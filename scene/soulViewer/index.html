@@ -9,12 +9,46 @@
 </head>
 
 <body style="background: #000;">
-    <div id="load" style="position: fixed; color: greenyellow">загрузка...</div>
-    <div id="warning" style="position: fixed; font-size: 20px; color: orange;margin: 20px 5px;"></div>
+    <div id="load" style="position: fixed; color: greenyellow; bottom: 5px;">загрузка...</div>
+    <div id="warning" style="position: fixed; font-size: 20px; color: rgb(255, 38, 0);bottom: 20px;"></div>
 
     <script src="script.js" type="module"></script>
     <audio src="media/rain.mp3" loop id="soundRain"></audio>
-    <audio src="media/Soul Reaver - Turel Clan.mp3" loop id="soundMusic"></audio>
+
+    <script src="musicPlayer.js">
+       
+    </script>
+
+    <style>
+        .track {
+            background: #000;
+            border: 1px #fff solid;
+            border-radius: 30px;
+            padding: 5px 20px;
+            cursor: pointer;
+        }
+
+        .select {
+            background: #115599;
+        }
+
+        .fix {
+            position: fixed;
+            z-index: 1000;
+            cursor: pointer;
+            padding-left: 10px;
+        }
+        .buttonSound{
+            position: fixed;
+            z-index: 1005;
+            background: #000;
+            border: 1px #fff solid;
+            border-radius: 30px;
+            padding: 4px 10px; 
+            cursor: pointer;
+            font-family: monospace;
+        }
+    </style>
 </body>
 
 </html>
