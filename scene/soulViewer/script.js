@@ -6,8 +6,8 @@ import LoadModel from "./loadModel.js";
 let viewer = new Viewer();
 window.viewer = viewer
 
-let minVec = new THREE.Vector3(-666, 10, -940)
-let maxVec = new THREE.Vector3(666, 666, 533)
+let minVec = new THREE.Vector3(-1666, 10, -1940)
+let maxVec = new THREE.Vector3(1666, 1666, 1533)
 
 let percentComplete
 
@@ -190,15 +190,17 @@ function start() {
     rainMesh.material.blending = 2
     rainMesh.material.transparent = true
 
-
-    for (let i = 1; i < 50; i++) {
-        Rain(dropMesh, rainMesh, 1, -511, 511, -800, 530)
+    let xmin = -790, xmax = 790, zmin = -1740, zmax =1400
+    for (let i = 0; i < 70; i++) {
+        Rain(dropMesh, rainMesh, xmin, xmax, zmin, zmax)
+       // Rain(dropMesh, rainMesh, -50, 50, -10, 10)
     }
+    //let box0 = new THREE.Mesh( new THREE.BoxBufferGeometry(10,10,10),new  THREE.MeshPhongMaterial())
     for (let i = 1; i < 50; i++) {
-        Rain(null, rainMesh, 300, -2000, -520, -800, 1500)
-        Rain(null, rainMesh, 300, 520, 2000, -800, 1500)
-        Rain(null, rainMesh, 1, -1500, 1500, -1500, -750)
-        Rain(null, rainMesh, 1, -511, 511, 550, 3000)
+        Rain(null, rainMesh, xmin-2000, xmin, zmin, zmax) //left
+        Rain(null, rainMesh, xmax, xmax+2000, zmin, zmax) //right
+        Rain(null, rainMesh, xmin-2000, xmax+2000, zmin, zmin-2000)    // за зданием
+        Rain(null, rainMesh, xmin-2000, xmax+2000, zmax, zmax+2000)       // лес
     }
 
     vorodorRuin.getObjectByName("alfaFon").material.alphaTest = 0.5
@@ -230,17 +232,20 @@ function start() {
     lightning(vorodorRuin.getObjectByName("lightnings").children)
 
 
-    function Rain(meshDrop, meshRain, bottomY, minX, maxX, minZ, maxZ) {
-        meshRain = rainMesh.clone()
+    function Rain(meshDrop, meshRain, minX, maxX, minZ, maxZ) {
+        meshRain = meshRain.clone()
         viewer.scene.add(meshRain)
+        let ray = new THREE.Raycaster();
+        ray.ray.direction = new THREE.Vector3(0,-1,0) // направление луча ДОЛЖНО БЫТЬ СМЕЩЕНИЕ ОТ НУЛЯ ТО ЕСТЬ НОЛЬ ЭТО НАЧАЛО ЛУЧА
+        let pointCollizion = new THREE.Vector3()
 
         if (meshDrop !== null) {
-            meshDrop = dropMesh.clone()
+            meshDrop = meshDrop.clone()
             viewer.scene.add(meshDrop)
         }
 
         let clockStartDrop, time
-        meshRain.position.y = Math.random() * 1500
+
         start(Math.random() * 1500)
 
         function start(y) {
@@ -250,12 +255,27 @@ function start() {
                 y + Math.random() * 30,
                 Math.random() * (maxZ - minZ) + minZ
             )
+
+            if (meshDrop !== null){
+
+                ray.ray.origin = meshRain.position.clone()       // начало луча
+
+                let collisionResults = ray.intersectObjects(viewer.ArreyCollisionMesh); // массив с сетками для коллизии
+                if (collisionResults.length) {
+                    pointCollizion = collisionResults[0].point                   
+                }
+                else {
+                    pointCollizion.set(meshRain.position.x,0,meshRain.position.z)
+                }
+            }
+
+
         }
         function moveY() {
-            if (meshRain.position.y < bottomY) {
+            if (meshRain.position.y < pointCollizion.y) {
                 if (meshDrop !== null) {
                     meshDrop.visible = true
-                    meshDrop.position.set(meshRain.position.x, bottomY, meshRain.position.z)
+                    meshDrop.position.copy(pointCollizion)
                     clockStartDrop = Date.now()
                     animationDrop()
                 }
